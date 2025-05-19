@@ -13,10 +13,9 @@
       Estás a un paso de vivir nuevas experiencias.<br>
       ¡Confirma tu participación!
     </p>
-    <form action="../php/login.php" method="POST" onsubmit="return validarFormulario();" class="space-y-4">
+    <form action="/login" method="POST" onsubmit="return validarFormulario();" class="space-y-4">
+      @csrf
       <input type="text" id="rut" name="rut" placeholder="RUT" oninput="soloNumeros(this)" required
-        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#328E6E]">
-      <input type="email" id="correo" name="correo" placeholder="Correo" required
         class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#328E6E]">
       <input type="password" id="contrasena" name="contrasena" placeholder="Contraseña" required
         class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#328E6E]">
@@ -29,7 +28,7 @@
       </button>
     </form>
     <div class="mt-4 text-center">
-      <a href="./userSelection" class="text-sm text-gray-600 hover:underline">Crear una nueva cuenta</a>
+      <a href="/userSelection" class="text-sm text-gray-600 hover:underline">Crear una nueva cuenta</a>
     </div>
     <div class="mt-6 flex justify-center">
       <img src="../img/logo-uda.png" alt="Logo Universidad de Atacama" class="h-12">

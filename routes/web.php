@@ -1,28 +1,29 @@
 <?php
+
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\RegistroEstudianteController;
+use App\Http\Controllers\RegistroExternoController;
+use App\Http\Controllers\LoginController;
 
+# Register web views for the application.
 
-# Register web routes for the application.
-Route::get('/', function () {
-    return view('index');
-});
+Route::view('/login', "login")->name('login');
+Route::post('/login', [LoginController::class, 'login']);
+Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
-Route::get('/userSelection', function () {
-    return view('userSelection');
-});
+Route::view('/userSelection', "userSelection")->name('userSelection');
 
-Route::get('/registerEstudiante', function () {
-    return view('registerEstudiante');
-});
+Route::get('/registroEstudiante', function () {
+    return view('registroEstudiante');
+})->name('registroEstudiante');
 
-Route::post('/registerEstudiante', function () {
-    return view('registerEstudiante');
-});
+Route::get('/registroExterno', function () {
+    return view('registroExterno');
+})->name('registroExterno');
 
-Route::get('/registerExterno', function () {
-    return view('registerExterno');
-});
+Route::post('/registroEstudiante', [RegistroEstudianteController::class, 'store']);
+Route::post('/registroExterno', [RegistroExternoController::class, 'store']);
 
-Route::post('/registerExterno', function () {
-    return view('registerExterno');
-});
+Route::view('/user/inscripcionEventos', 'user.inscripcionEventos')->middleware('auth')->name('inscripcionEventos');
+
+Route::view('/admin/panel', "admin.panel")->middleware('auth')->name('panel');

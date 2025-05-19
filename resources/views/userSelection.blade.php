@@ -14,14 +14,14 @@
     </p>
 
     <div class="space-y-4">
-      <a href="./registerEstudiante" class="block">
+      <a href="/registroEstudiante" class="block">
         <div class="bg-gray-200 rounded-lg overflow-hidden shadow hover:shadow-md transition">
           <div class="h-32 bg-gray-300"></div>
           <div class="p-4 text-center font-medium text-gray-700 border-t">Estudiante UDA</div>
         </div>
       </a>
 
-      <a href="./registerExterno" class="block">
+      <a href="/registroExterno" class="block">
         <div class="bg-gray-200 rounded-lg overflow-hidden shadow hover:shadow-md transition">
           <div class="h-32 bg-gray-300"></div>
           <div class="p-4 text-center font-medium text-gray-700 border-t">Externo</div>
@@ -30,7 +30,7 @@
     </div>
 
     <div class="mt-4 text-center">
-      <a href="./" class="text-sm text-gray-600 hover:underline">Ya tienes cuenta? Inicia Sesión aquí</a>
+      <a href="./login" class="text-sm text-gray-600 hover:underline">Ya tienes cuenta? Inicia Sesión aquí</a>
     </div>
 
     <div class="mt-6 flex justify-center">
