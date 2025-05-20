@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Estudiante;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class RegistroEstudianteController extends Controller
 {
@@ -25,7 +25,9 @@ class RegistroEstudianteController extends Controller
             'contrasena' => Hash::make($request->contrasena)
         ]);
 
-        Auth::login($estudiante);
+        Session::put('rut', $estudiante->rut);
+        Session::put('tipo_usuario', 'estudiante');
+
         return redirect('/user/inscripcionEventos')->with('success', 'Estudiante registrado exitosamente');
     }
 }

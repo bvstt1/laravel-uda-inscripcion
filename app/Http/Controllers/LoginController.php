@@ -35,9 +35,9 @@ class LoginController extends Controller
             return back()->withErrors(['rut' => 'Credenciales inválidas'])->withInput();
         }
 
-        // Guardar en sesión
         Session::put('rut', $user->rut);
         Session::put('tipo_usuario', $tipo);
+
 
         // Redirigir según tipo
         if ($tipo === 'admin') {

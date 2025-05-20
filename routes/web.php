@@ -24,6 +24,7 @@ Route::get('/registroExterno', function () {
 Route::post('/registroEstudiante', [RegistroEstudianteController::class, 'store']);
 Route::post('/registroExterno', [RegistroExternoController::class, 'store']);
 
-Route::view('/user/inscripcionEventos', 'user.inscripcionEventos')->middleware('auth')->name('inscripcionEventos');
-
-Route::view('/admin/panel', "admin.panel")->middleware('auth')->name('panel');
+Route::middleware('session.auth')->group(function () {
+    Route::view('/admin/panel', 'admin.panel')->name('panel');
+    Route::view('/user/inscripcionEventos', 'user.inscripcionEventos')->name('inscripcionEventos');
+});

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Externo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class RegistroExternoController extends Controller
 {
@@ -26,7 +26,9 @@ class RegistroExternoController extends Controller
             'contrasena' => Hash::make($request->contrasena)
         ]);
 
-        Auth::login($externo);
-        return redirect('/user/inscripcionEventos')->with('success', 'Estudiante registrado exitosamente');
+        Session::put('rut', $externo->rut);
+        Session::put('tipo_usuario', 'externo');
+
+        return redirect('/user/inscripcionEventos')->with('success', 'Externo registrado exitosamente');
     }
 }
