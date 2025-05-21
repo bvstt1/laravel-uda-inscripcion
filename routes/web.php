@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RegistroEstudianteController;
 use App\Http\Controllers\RegistroExternoController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\EventoController;
+use App\Http\Controllers\ImagenController;
+
 
 # Register web views for the application.
 
@@ -26,5 +29,16 @@ Route::post('/registroExterno', [RegistroExternoController::class, 'store']);
 
 Route::middleware('session.auth')->group(function () {
     Route::view('/admin/panel', 'admin.panel')->name('panel');
+    
     Route::view('/user/inscripcionEventos', 'user.inscripcionEventos')->name('inscripcionEventos');
+
+    Route::get('/admin/eventos/crear', [EventoController::class, 'create'])->name('eventos.create');
+    Route::post('/admin/eventos', [EventoController::class, 'store'])->name('eventos.store');
+    Route::get('/eventos/fechas-semana/{id}', [EventoController::class, 'fechasSemana']);
+    Route::post('/upload-imagen', [ImagenController::class, 'upload']);
+
 });
+
+
+
+
