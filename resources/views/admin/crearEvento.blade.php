@@ -21,16 +21,25 @@
             class="text-xs bg-[#328E6E] hover:bg-[#287256] text-white font-medium py-1 px-3 rounded-lg shadow">
                 ← Volver al Panel
             </a>
-
+            <a href="{{ route('eventos.index') }}" class="text-sm text-blue-600 hover:underline mr-2">Ver eventos</a>
             <a href="/logout" class="text-sm text-red-600 hover:underline">Cerrar sesión</a>
         </div>
 
         <h2 class="text-2xl font-bold text-center text-[#328E6E] mb-4">Crear Evento</h2>
 
         @if(session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+            <div id="success-message" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
                 {{ session('success') }}
             </div>
+            <script>
+                setTimeout(() => {
+                const msg = document.getElementById('success-message');
+                if (msg) {
+                    msg.style.opacity = '0';
+                    setTimeout(() => msg.remove(), 500); // Elimina después de desvanecerse
+                }
+                }, 3000); // Desaparece tras 3 segundos
+            </script>
         @endif
 
 
