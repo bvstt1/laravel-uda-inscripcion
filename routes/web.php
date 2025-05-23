@@ -5,11 +5,13 @@ use App\Http\Controllers\RegistroEstudianteController;
 use App\Http\Controllers\RegistroExternoController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\EventoController;
+use App\Http\Controllers\InscripcionController;
+use App\Http\Controllers\AdminInscripcionController;
 
 //
-// ==========================
-// RUTAS DE AUTENTICACIÓN
-// ==========================
+// ==================================
+// AUTENTICACIÓN Y SELECCIÓN DE ROL
+// ==================================
 //
 
 Route::view('/login', 'login')->name('login');
@@ -19,9 +21,9 @@ Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::view('/userSelection', 'userSelection')->name('userSelection');
 
 //
-// ==========================
+// =======================
 // REGISTRO DE USUARIOS
-// ==========================
+// =======================
 //
 
 Route::view('/registroEstudiante', 'registroEstudiante')->name('registroEstudiante');
@@ -31,37 +33,55 @@ Route::post('/registroEstudiante', [RegistroEstudianteController::class, 'store'
 Route::post('/registroExterno', [RegistroExternoController::class, 'store']);
 
 //
-// ==========================
-// RUTAS PÚBLICAS / USUARIOS (Sin middleware)
-// ==========================
-//
-
-Route::get('/eventos-disponibles', [EventoController::class, 'mostrarEventosUsuarios'])->name('inscripcionEventos');
-Route::get('/eventos/semanal/{id}/ver-dias', [EventoController::class, 'verDiasUsuario'])->name('usuario.evento.dias');
-
-//
-// ==========================
-// RUTAS DE ADMIN (Protegidas por middleware)
-// ==========================
+// ============================================
+// RUTAS PROTEGIDAS (AUTENTICACIÓN ADMIN/USERS)
+// ============================================
 //
 
 Route::middleware('session.auth')->group(function () {
 
+    //
+    // PANEL DE ADMINISTRACIÓN
+    //
     Route::view('/admin/panel', 'admin.panel')->name('panel');
 
-    // CRUD de Eventos
-    Route::get('/admin/eventos', [EventoController::class, 'index'])->name('eventos.index');
-    Route::get('/admin/eventos/crear', [EventoController::class, 'create'])->name('eventos.create');
-    Route::post('/admin/eventos', [EventoController::class, 'store'])->name('eventos.store');
-    Route::get('/admin/eventos/{id}/editar', [EventoController::class, 'edit'])->name('eventos.edit');
-    Route::put('/admin/eventos/{id}', [EventoController::class, 'update'])->name('eventos.update');
-    Route::delete('/admin/eventos/{id}', [EventoController::class, 'destroy'])->name('eventos.destroy');
+    //
+    // CRUD DE EVENTOS
+    //
+    Route::prefix('admin/eventos')->name('eventos.')->group(function () {
+        Route::get('/', [EventoController::class, 'index'])->name('index');
+        Route::get('/crear', [EventoController::class, 'create'])->name('create');
+        Route::post('/', [EventoController::class, 'store'])->name('store');
+        Route::get('/{id}/editar', [EventoController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [EventoController::class, 'update'])->name('update');
+        Route::delete('/{id}', [EventoController::class, 'destroy'])->name('destroy');
+    });
 
-    // Utilidad para seleccionar fechas válidas de una semana
+    //
+    // FECHAS RELACIONADAS A EVENTOS SEMANALES
+    //
     Route::get('/eventos/fechas-semana/{id}', [EventoController::class, 'fechasSemana'])->name('eventos.dias');
     Route::get('/eventos/semanal/{id}/dias', [EventoController::class, 'verDias'])->name('eventos.semanal.dias');
+
+    //
+    // INSCRIPCIÓN A EVENTOS
+    //
+    Route::post('/eventos/{id}/inscribirse', [InscripcionController::class, 'store'])->name('inscribirse');
+    Route::delete('/evento/{id}/desinscribirse', [InscripcionController::class, 'destroy'])->name('desinscribirse');
+
+    //
+    // ADMINISTRACIÓN DE INSCRIPCIONES
+    //
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::get('/ver-inscripciones', [AdminInscripcionController::class, 'verEventos'])->name('inscripciones');
+        Route::get('/inscripciones/semana/{id}', [AdminInscripcionController::class, 'verDiasEventoSemanal'])->name('inscritos.semana');
+        Route::get('/inscripciones/evento/{id}', [AdminInscripcionController::class, 'verInscritosPorEvento'])->name('inscritos.evento');
+        Route::get('/exportar-excel/{id}', [AdminInscripcionController::class, 'exportarExcel'])->name('exportar.excel');
+    });
+
+    //
+    // VISTA DE INSCRIPCIÓN PARA USUARIOS LOGUEADOS
+    //
+    Route::get('/eventos-disponibles', [EventoController::class, 'mostrarEventosUsuarios'])->name('inscripcionEventos');
+    Route::get('/eventos/semanal/{id}/ver-dias', [EventoController::class, 'verDiasUsuario'])->name('usuario.evento.dias');
 });
-
-
-
-

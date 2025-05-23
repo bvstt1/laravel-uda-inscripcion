@@ -17,7 +17,7 @@
     <div class="flex flex-col space-y-4 mb-6">
       <a href="{{ route('eventos.create') }}" class="block w-full bg-[#328E6E] hover:bg-[#287256] text-white py-2 rounded-lg shadow-md transition">Crear Evento</a>
       <a href="{{ route('eventos.index')}}" class="block w-full bg-[#328E6E] hover:bg-[#287256] text-white py-2 rounded-lg shadow-md transition">Ver / Editar / Eliminar Evento</a>
-      <a href="./ver_inscripciones.php" class="block w-full bg-[#328E6E] hover:bg-[#287256] text-white py-2 rounded-lg shadow-md transition">Asistencia eventos</a>
+      <a href="{{ route('admin.inscripciones')}}" class="block w-full bg-[#328E6E] hover:bg-[#287256] text-white py-2 rounded-lg shadow-md transition">Asistencia eventos</a>
     </div>
 
     <a href="/logout" class="text-sm text-red-600 hover:underline">Cerrar sesión</a>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Evento;
 use Carbon\Carbon;
+use App\Models\Inscripcion;
 
 class EventoController extends Controller
 {
@@ -59,6 +60,9 @@ class EventoController extends Controller
 
     public function update(Request $request, $id)
     {
+        $evento = Evento::findOrFail($id);
+        $tipoAnterior = $evento->tipo;
+    
         $request->validate([
             'tipo' => 'required|in:semanal,diario',
             'titulo' => 'required|string',
@@ -69,12 +73,17 @@ class EventoController extends Controller
             'hora' => 'nullable|required_if:tipo,diario|date_format:H:i',
             'hora_termino' => 'nullable|required_if:tipo,diario|date_format:H:i|after:hora',
         ]);
-
-        $evento = Evento::findOrFail($id);
+    
+        // Si pasa de semanal a diario → eliminar eventos asociados
+        if ($tipoAnterior === 'semanal' && $request->tipo === 'diario') {
+            Evento::where('id_evento_padre', $id)->delete();
+        }
+    
         $evento->update($request->all());
-
+    
         return redirect()->route('eventos.index')->with('success', 'Evento actualizado correctamente.');
     }
+    
 
     public function destroy($id)
     {
@@ -88,7 +97,6 @@ class EventoController extends Controller
 
         return redirect()->route('eventos.index')->with('success', 'Evento eliminado correctamente.');
     }
-
     public function fechasSemana($id)
     {
         $evento = Evento::findOrFail($id);
@@ -117,17 +125,23 @@ class EventoController extends Controller
 
     public function mostrarEventosUsuarios()
     {
+        $rut = session('rut'); // o auth()->user()->rut si estás usando Auth
         $eventosDiarios = Evento::where('tipo', 'diario')->whereNull('id_evento_padre')->get();
         $eventosSemanales = Evento::where('tipo', 'semanal')->get();
     
-        return view('user.inscripcionEventos', compact('eventosDiarios', 'eventosSemanales'));
+        $inscritos = Inscripcion::where('rut_usuario', $rut)->pluck('id_evento')->toArray();
+    
+        return view('user.inscripcionEventos', compact('eventosDiarios', 'eventosSemanales', 'inscritos'));
     }
     public function verDiasUsuario($id)
     {
         $eventoSemanal = Evento::findOrFail($id);
         $eventosDiarios = Evento::where('id_evento_padre', $id)->orderBy('fecha')->get();
-
-        return view('user.verDiasEvento', compact('eventoSemanal', 'eventosDiarios'));
+    
+        $rut = session('rut');
+        $inscritos = Inscripcion::where('rut_usuario', $rut)->pluck('id_evento')->toArray();
+    
+        return view('user.verDiasEvento', compact('eventoSemanal', 'eventosDiarios', 'inscritos'));
     }
 
     

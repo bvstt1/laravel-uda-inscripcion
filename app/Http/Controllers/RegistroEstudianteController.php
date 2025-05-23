@@ -28,6 +28,6 @@ class RegistroEstudianteController extends Controller
         Session::put('rut', $estudiante->rut);
         Session::put('tipo_usuario', 'estudiante');
 
-        return redirect('/user/inscripcionEventos')->with('success', 'Estudiante registrado exitosamente');
+        return redirect()->route('inscripcionEventos')->with('success', 'Usuario registrado exitosamente');
     }
 }
