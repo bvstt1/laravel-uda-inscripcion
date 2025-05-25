@@ -7,6 +7,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\EventoController;
 use App\Http\Controllers\InscripcionController;
 use App\Http\Controllers\AdminInscripcionController;
+use App\Http\Controllers\TotemController;
 
 //
 // ==================================
@@ -84,4 +85,11 @@ Route::middleware('session.auth')->group(function () {
     //
     Route::get('/eventos-disponibles', [EventoController::class, 'mostrarEventosUsuarios'])->name('inscripcionEventos');
     Route::get('/eventos/semanal/{id}/ver-dias', [EventoController::class, 'verDiasUsuario'])->name('usuario.evento.dias');
+
+    //
+    // VISTA TOTEM
+    //
+    Route::get('/totem', [TotemController::class, 'seleccionarEvento'])->name('totem.selector');
+    Route::get('/totem/evento/{id}', [TotemController::class, 'form'])->name('totem.form');
+    Route::post('/totem/evento/{id}/asistencia', [TotemController::class, 'registrarAsistencia'])->name('totem.registrar');
 });

@@ -46,6 +46,7 @@
             @endif
           </p>
           <p class="text-sm text-gray-600"><strong>Lugar:</strong> {{ $evento->lugar }}</p>
+          <strong class="text-sm text-gray-600">Descripción:</strong>
           <button class="ver-mas-btn text-sm text-[#328E6E] hover:underline mt-2" data-id="{{ $evento->id }}">Ver más</button>
           <div class="mt-4">
             @php
@@ -53,9 +54,12 @@
             @endphp
 
             @if ($estado === 'inscrito')
-              <form method="POST" action="{{ route('desinscribirse', $evento->id) }}">
+              <form method="POST" action="{{ route('desinscribirse', $evento->id) }}"  onsubmit="return confirm('¿Estás seguro que deseas desinscribirte? Esta acción es irreversible y perderás tu acceso.')">
                 @csrf
                 @method('DELETE')
+                <p class="text-xs text-red-500 italic mb-2">
+                  ⚠️ Al desinscribirte, perderás tu código QR y no podrás volver a inscribirte en este evento.
+                </p>
                 <button type="submit" class="bg-red-500 hover:bg-red-600 text-white py-1 px-4 rounded-lg transition">
                   Desinscribirse
                 </button>
@@ -65,7 +69,7 @@
                 Ya te desinscribiste de este evento. No puedes volver a inscribirte.
               </div>
             @else
-              <form method="POST" action="{{ route('inscribirse', $evento->id) }}">
+              <form method="POST" action="{{ route('inscribirse', $evento->id) }}" onsubmit="return confirm('¿Estas seguro que deseas inscribire a este evento?')">
                 @csrf
                 <button type="submit" class="bg-[#328E6E] hover:bg-[#287256] text-white py-1 px-4 rounded-lg transition">
                   Inscribirse
@@ -85,6 +89,7 @@
                 @endif
               </p>
               <p class="text-sm text-gray-600 mb-4"><strong>Lugar:</strong> {{ $evento->lugar }}</p>
+              <strong class="text-sm text-gray-600">Descripción:</strong>
               <div class="editor-content text-sm text-gray-700">{!! $evento->descripcion !!}</div>
               <button class="cerrar-modal-btn absolute top-2 right-4 text-gray-500 hover:text-gray-700 text-xl" data-id="{{ $evento->id }}">&times;</button>
             </div>
@@ -109,6 +114,7 @@
           <h3 class="text-lg font-semibold text-[#328E6E]">{{ $evento->titulo }}</h3>
           <p class="text-sm text-gray-600"><strong>Semana:</strong> {{ $inicioSemana->format('Y-m-d') }} al {{ $finSemana->format('Y-m-d') }}</p>
           <p class="text-sm text-gray-600"><strong>Lugar:</strong> {{ $evento->lugar }}</p>
+          <strong class="text-sm text-gray-600">Descripción:</strong>
           <button class="ver-mas-btn text-sm text-[#328E6E] hover:underline mt-2" data-id="{{ $evento->id }}">Ver más</button>
           <div class="mt-4">
             <a href="{{ route('usuario.evento.dias', $evento->id) }}" class="text-sm text-[#328E6E] hover:underline">
@@ -121,6 +127,7 @@
               <h2 class="text-2xl font-bold text-[#328E6E] mb-4">{{ $evento->titulo }}</h2>
               <p class="text-sm text-gray-600 mb-1"><strong>Semana:</strong> {{ $inicioSemana->format('Y-m-d') }} al {{ $finSemana->format('Y-m-d') }}</p>
               <p class="text-sm text-gray-600 mb-4"><strong>Lugar:</strong> {{ $evento->lugar }}</p>
+              <strong class="text-sm text-gray-600">Descripción:</strong>
               <div class="editor-content text-sm text-gray-700">{!! $evento->descripcion !!}</div>
               <button class="cerrar-modal-btn absolute top-2 right-4 text-gray-500 hover:text-gray-700 text-xl" data-id="{{ $evento->id }}">&times;</button>
             </div>
