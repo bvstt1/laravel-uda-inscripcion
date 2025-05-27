@@ -6,20 +6,53 @@ use App\Models\Externo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\DB;
 
 class RegistroExternoController extends Controller
 {
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $request->validate([
-            'rut' => 'required|unique:externos',
-            'correo' => 'required|email|unique:externos',
+            'rut' => [
+                'required',
+                'cl_rut',
+                function ($attribute, $value, $fail) {
+                    $rut_normalizado = \Freshwork\ChileanBundle\Rut::parse($value)->normalize();
+
+                    $existe = DB::table('estudiantes')->where('rut', $rut_normalizado)->exists()
+                        || DB::table('externos')->where('rut', $rut_normalizado)->exists();
+
+                    if ($existe) {
+                        $fail('Ya existe una cuenta registrada con este RUT.');
+                    }
+                },
+            ],
+            'correo' => [
+                'required',
+                'email',
+                function ($attribute, $value, $fail) {
+                    $existe = DB::table('estudiantes')->where('correo', $value)->exists()
+                        || DB::table('externos')->where('correo', $value)->exists();
+
+                    if ($existe) {
+                        $fail('Ya existe una cuenta registrada con este correo.');
+                    }
+                }
+            ],
             'institucion' => 'required|string|max:255',
             'cargo' => 'required|string|max:255',
-            'contrasena' => 'required|confirmed|min:6'
+            'contrasena' => [
+                'required',
+                'confirmed',
+                'min:8',
+                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/'
+            ]
         ]);
 
+        $rut_normalizado = \Freshwork\ChileanBundle\Rut::parse($request->rut)->normalize();
+
         $externo = Externo::create([
-            'rut' => $request->rut,
+            'rut' => $rut_normalizado,
             'correo' => $request->correo,
             'institucion' => $request->institucion,
             'cargo' => $request->cargo,
