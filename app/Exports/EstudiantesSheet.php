@@ -22,9 +22,24 @@ class EstudiantesSheet implements FromCollection, WithTitle, WithHeadings
             ->join('estudiantes', 'inscripciones.rut_usuario', '=', 'estudiantes.rut')
             ->where('inscripciones.id_evento', $this->eventoId)
             ->where('inscripciones.tipo_usuario', 'estudiante')
-            ->select('estudiantes.rut', 'estudiantes.correo', 'estudiantes.carrera', 'inscripciones.fecha_inscripcion')
-            ->get();
-    }
+            ->select(
+                'estudiantes.rut',
+                'estudiantes.correo',
+                'estudiantes.carrera',
+                'inscripciones.fecha_inscripcion',
+                'inscripciones.asistio_at'
+            )
+            ->get()
+            ->map(function ($registro) {
+                return [
+                    $registro->rut,
+                    $registro->correo,
+                    $registro->carrera,
+                    $registro->fecha_inscripcion,
+                    $registro->asistio_at ? 'Sí' : '',
+                ];
+            });
+    }    
 
     public function title(): string
     {
@@ -33,6 +48,6 @@ class EstudiantesSheet implements FromCollection, WithTitle, WithHeadings
 
     public function headings(): array
     {
-        return ['RUT', 'Correo', 'Carrera', 'Fecha de Inscripción'];
+        return ['RUT', 'Correo', 'Carrera', 'Fecha de Inscripción', 'Asistió'];
     }
 }

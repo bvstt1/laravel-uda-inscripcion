@@ -17,8 +17,9 @@
     <div class="flex flex-col space-y-4 mb-6">
       <a href="{{ route('eventos.create') }}" class="block w-full bg-[#328E6E] hover:bg-[#287256] text-white py-2 rounded-lg shadow-md transition">Crear Evento</a>
       <a href="{{ route('eventos.index')}}" class="block w-full bg-[#328E6E] hover:bg-[#287256] text-white py-2 rounded-lg shadow-md transition">Ver / Editar / Eliminar Evento</a>
-      <a href="{{ route('admin.inscripciones') }}" class="block w-full bg-[#328E6E] hover:bg-[#287256] text-white py-2 rounded-lg shadow-md transition">Ver Insciprciones y/o Asistencias</a>
-       <a href="{{ route('totem.selector')}}" class="block w-full bg-[#328E6E] hover:bg-[#287256] text-white py-2 rounded-lg shadow-md transition">Abrir Totém de Asistencia</a>      
+      <a href="{{ route('admin.inscripciones') }}" class="block w-full bg-[#328E6E] hover:bg-[#287256] text-white py-2 rounded-lg shadow-md transition">Ver Inscritos y Asistencias</a>
+      <a href="{{ route('totem.selector')}}" class="block w-full bg-[#328E6E] hover:bg-[#287256] text-white py-2 rounded-lg shadow-md transition">Abrir Totém de Asistencia a Eventos</a>      
+      <a href="{{ route('totem.libre')}}" class="block w-full bg-[#328E6E] hover:bg-[#287256] text-white py-2 rounded-lg shadow-md transition">Abrir Totém de Asistencia Libre</a>          
     </div>
 
     <a href="/logout" class="bg-red-700 hover:bg-red-800 text-white px-4 py-2 rounded transition text-sm hover:underline">Cerrar sesión</a>

@@ -8,6 +8,7 @@ use App\Http\Controllers\EventoController;
 use App\Http\Controllers\InscripcionController;
 use App\Http\Controllers\AdminInscripcionController;
 use App\Http\Controllers\TotemController;
+use App\Http\Controllers\TotemLibreController;
 
 //
 // ==================================
@@ -92,4 +93,8 @@ Route::middleware('session.auth')->group(function () {
     Route::get('/totem', [TotemController::class, 'seleccionarEvento'])->name('totem.selector');
     Route::get('/totem/evento/{id}', [TotemController::class, 'form'])->name('totem.form');
     Route::post('/totem/evento/{id}/asistencia', [TotemController::class, 'registrarAsistencia'])->name('totem.registrar');
+    // TOTEM LIBRE
+    Route::get('/totem/libre', [TotemLibreController::class, 'index'])->name('totem.libre');
+    Route::post('/totem/libre', [TotemLibreController::class, 'registrar'])->name('totem.registro.libre');
+    
 });

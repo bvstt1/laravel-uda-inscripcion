@@ -35,6 +35,7 @@
           <th class="px-4 py-2">Correo</th>
           <th class="px-4 py-2">Carrera</th>
           <th class="px-4 py-2">Fecha Inscripción</th>
+          <th class="px-4 py-2">Asistencia</th>
         </tr>
       </thead>
       <tbody>
@@ -47,6 +48,7 @@
             <td class="px-4 py-2">{{ $est?->correo }}</td>
             <td class="px-4 py-2">{{ $est?->carrera }}</td>
             <td class="px-4 py-2">{{ \Carbon\Carbon::parse($i->fecha_inscripcion)->format('Y-m-d H:i') }}</td>
+            <td class="px-4 py-2">{{ $i->asistio_at ? 'Asistió' : '' }}</td>
           </tr>
         @endforeach
       </tbody>
@@ -66,6 +68,7 @@
           <th class="px-4 py-2">Institución</th>
           <th class="px-4 py-2">Cargo</th>
           <th class="px-4 py-2">Fecha Inscripción</th>
+          <th class="px-4 py-2">Asistencia</th>
         </tr>
       </thead>
       <tbody>
@@ -79,6 +82,7 @@
             <td class="px-4 py-2">{{ $ext?->institucion }}</td>
             <td class="px-4 py-2">{{ $ext?->cargo }}</td>
             <td class="px-4 py-2">{{ \Carbon\Carbon::parse($i->fecha_inscripcion)->format('Y-m-d H:i') }}</td>
+            <td class="px-4 py-2">{{ $i->asistio_at ? 'Asistió' : '' }}</td>
           </tr>
         @endforeach
       </tbody>
