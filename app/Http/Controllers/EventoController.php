@@ -129,9 +129,9 @@ class EventoController extends Controller
         $eventosDiarios = Evento::where('tipo', 'diario')->whereNull('id_evento_padre')->get();
         $eventosSemanales = Evento::where('tipo', 'semanal')->get();
     
-        $inscritos = Inscripcion::where('rut_usuario', $rut)->pluck('id_evento')->toArray();
+        $inscripciones = Inscripcion::where('rut_usuario', $rut)->get()->keyBy('id_evento');
     
-        return view('user.inscripcionEventos', compact('eventosDiarios', 'eventosSemanales', 'inscritos'));
+        return view('user.inscripcionEventos', compact('eventosDiarios', 'eventosSemanales', 'inscripciones'));
     }
     public function verDiasUsuario($id)
     {

@@ -45,7 +45,7 @@
               @endif
             </p>
             <p class="text-sm text-gray-600"><strong>Lugar:</strong> {{ $evento->lugar }}</p>
-            
+            <strong class="text-sm text-gray-600">Descripción:</strong>
             <button class="ver-mas-btn text-sm text-[#328E6E] hover:underline mt-1 mb-2" data-id="{{ $evento->id }}">Ver más</button>
 
             <!-- Modal -->
@@ -67,16 +67,19 @@
 
             @if(in_array($evento->id, $inscritos))
             <!-- Desinscribirse -->
-            <form method="POST" action="{{ route('desinscribirse', $evento->id) }}">
+            <form method="POST" action="{{ route('desinscribirse', $evento->id) }}" onsubmit="return confirm('¿Estás seguro que deseas desinscribirte? Esta acción es irreversible y perderás tu acceso.')">
               @csrf
               @method('DELETE')
+              <p class="text-xs text-red-500 italic mb-2">
+                ⚠️ Al desinscribirte, perderás tu código QR y no podrás volver a inscribirte en este evento.
+              </p>
               <button type="submit" class="bg-red-500 hover:bg-red-600 text-white py-1 px-4 rounded-lg transition">
                 Desinscribirse
               </button>
             </form>
           @else
             <!-- Inscribirse -->
-            <form method="POST" action="{{ route('inscribirse', $evento->id) }}">
+            <form method="POST" action="{{ route('inscribirse', $evento->id) }}" onsubmit="return confirm('¿Estas seguro que deseas inscribire a este evento?')">
               @csrf
               <button type="submit" class="bg-[#328E6E] hover:bg-[#287256] text-white py-1 px-4 rounded-lg transition">
                 Inscribirse

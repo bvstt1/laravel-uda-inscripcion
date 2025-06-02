@@ -12,20 +12,46 @@
     <p class="text-center text-md text-gray-700 mb-6">
       Estudiante <span class="text-[#328E6E] font-semibold">UDA</span>
     </p>
-
-    <form action="/registroEstudiante" method="POST" onsubmit="return validarFormulario();" class="space-y-4">
-      @csrf 
-      <input type="text" id="rut" name="rut" maxlength="10" placeholder="RUT" oninput="soloNumeros(this)" required
+      <div class="text-center">
+        <span id="mensaje-rut" class="text-gray-400 text-sm">Escribe tu rut sin puntos ni guión</span>  
+      </div>
+      <form action="/registroEstudiante" method="POST" onsubmit="return validarFormulario();" class="space-y-4">
+        @csrf 
+      
+      <input type="text" id="rut" name="rut" maxlength="10" placeholder="RUT" required
+        oninput="validarRutSoloNumeros(this)"
         class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#328E6E]">
+      @error('rut')
+        <p class="text-red-500 text-sm mt-1 transition-opacity duration-300" id="alerta-rut">{{ $message }}</p>
+      @enderror
 
-      <input type="email" name="correo" placeholder="correo@alumnos.uda.cl" required
-        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#328E6E]">
+      <input type="email" name="correo" id="correo" placeholder="correo@alumnos.uda.cl" required
+        oninput="validarCorreo(this)"
+        class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#328E6E]">
 
-      <input type="password" name="contrasena" placeholder="Contraseña" required
+      <span id="mensaje-correo" class="text-red-500 text-sm hidden"></span>
+
+      @error('correo')
+        <p class="text-red-500 text-sm mt-1 transition-opacity duration-300" id="alerta-correo">{{ $message }}</p>
+      @enderror
+
+      <input type="password" name="contrasena" id="contrasena" placeholder="Contraseña"
+        oninput="validarContrasena(this)"
+        required
         class="w-full border border-gray-200 bg-gray-100 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#328E6E]">
+        <span id="mensaje-contrasena" class="text-red-500 text-sm hidden"></span>
 
-      <input type="password" name="contrasena_confirmation" placeholder="Confirmar Contraseña" required
-        class="w-full border border-gray-200 bg-gray-100 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#328E6E]">
+      <input type="password" name="contrasena_confirmation" id="contrasena_confirmation" placeholder="Confirmar Contraseña" required 
+      oninput="validarConfirmacionContrasena()" 
+      class="w-full border border-gray-200 bg-gray-100 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#328E6E]">
+
+      <!-- Mensaje de JS (en vivo) -->
+      <span id="mensaje-confirmacion-js" class="text-red-500 text-sm hidden"></span>
+
+      <!-- Mensaje de Laravel (backend) -->
+      @error('contrasena_confirmation')
+        <span class="text-red-500 text-sm block">{{ $message }}</span>
+      @enderror
 
       <select name="carrera" required
         class="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#328E6E]">
@@ -79,7 +105,6 @@
     </div>
   </div>
 
-  <script src="../js/mensaje_registro.js"></script>
-  <script src="../js/rut_validacion.js"></script>
+<script src="{{ asset('js/vistaRut.js') }}"></script>
 </body>
 </html>

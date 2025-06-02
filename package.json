@@ -17,6 +17,9 @@
     },
     "dependencies": {
         "@tailwindcss/line-clamp": "^0.4.4",
-        "ckeditor5": "^45.1.0"
+        "ckeditor5": "^45.1.0",
+        "flatpickr": "^4.6.13",
+        "html5-qrcode": "^2.2.7",
+        "npm": "^11.4.1"
     }
 }
