@@ -32,8 +32,9 @@ class LoginController extends Controller
         }
 
         if (!$user || !Hash::check($request->contrasena, $user->contrasena)) {
-            return back()->withErrors(['rut' => 'Credenciales inválidas'])->withInput();
+            return back()->with('error', 'RUT o contraseña incorrectos.')->withInput();
         }
+
 
         Session::put('rut', $user->rut);
         Session::put('tipo_usuario', $tipo);
@@ -54,4 +55,5 @@ class LoginController extends Controller
         Session::flush();
         return redirect('/login');
     }
+    
 }

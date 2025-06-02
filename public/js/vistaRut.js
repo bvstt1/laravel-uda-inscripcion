@@ -1,6 +1,7 @@
 function validarRutSoloNumeros(input) {
-  let valor = input.value.toUpperCase(); // Convertir a mayúscula
+  let valor = input.value.toUpperCase();
   const mensaje = document.getElementById('mensaje-rut');
+  const alerta = document.getElementById('alerta-rut');
 
   // Eliminar todo lo que no sea número o K
   valor = valor.replace(/[^0-9K]/g, '');
@@ -9,9 +10,31 @@ function validarRutSoloNumeros(input) {
   const partes = valor.match(/^(\d{0,8})(K?)$/);
   if (partes) {
     input.value = partes[1] + partes[2];
+  } else {
+    // Si el valor no es válido (por ejemplo más de una K o caracteres raros)
+    if (alerta) {
+      alerta.textContent = 'Formato de RUT inválido.';
+      alerta.classList.remove('hidden');
+      alerta.style.opacity = 1;
+
+      // Desaparece a los 3 segundos
+      setTimeout(() => {
+        alerta.style.opacity = 0;
+        setTimeout(() => alerta.classList.add('hidden'), 300);
+      }, 3000);
+    }
+  }
+
+  // Mostrar mensaje orientador si está vacío
+  if (input.value === '') {
+    mensaje.textContent = 'Escribe tu rut sin puntos ni guión';
+    mensaje.classList.remove('hidden');
+  } else {
     mensaje.textContent = '';
+    mensaje.classList.add('hidden');
   }
 }
+
 
 
 function validarCorreo(input) {
@@ -112,4 +135,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const contrasena = document.getElementById('contrasena');
   if (contrasena) contrasena.addEventListener('input', () => validarContrasena(contrasena));
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+  const errorLogin = document.getElementById('mensaje-error-login');
+  if (errorLogin) {
+    setTimeout(() => {
+      errorLogin.style.opacity = 0;
+      setTimeout(() => errorLogin.style.display = 'none', 300);
+    }, 3000);
+  }
 });

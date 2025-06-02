@@ -9,6 +9,9 @@ use App\Http\Controllers\InscripcionController;
 use App\Http\Controllers\AdminInscripcionController;
 use App\Http\Controllers\TotemController;
 use App\Http\Controllers\TotemLibreController;
+use App\Http\Controllers\AdminAsistenciaController;
+use App\Http\Controllers\CuentaUsuarioController;
+
 
 //
 // ==================================
@@ -97,4 +100,17 @@ Route::middleware('session.auth')->group(function () {
     Route::get('/totem/libre', [TotemLibreController::class, 'index'])->name('totem.libre');
     Route::post('/totem/libre', [TotemLibreController::class, 'registrar'])->name('totem.registro.libre');
     
+    Route::get('/admin/asistencias', [AdminAsistenciaController::class, 'mostrarFormulario'])->name('admin.asistencias.filtro');
+    Route::get('/admin/asistencias/buscar', [AdminAsistenciaController::class, 'filtrarAsistencias'])->name('admin.asistencias.buscar');
+    Route::get('/admin/asistencias/exportar', [AdminAsistenciaController::class, 'exportarExcel'])->name('admin.asistencias.exportar');
+
+    //
+    // GESTIÓN DE CUENTA DEL USUARIO (Estudiante o Externo)
+    //
+    Route::get('/mi-cuenta', [CuentaUsuarioController::class, 'mostrarFormulario'])->name('cuenta.formulario');
+    Route::post('/mi-cuenta/actualizar', [CuentaUsuarioController::class, 'actualizar'])->name('cuenta.actualizar');
+    Route::delete('/mi-cuenta/eliminar', [CuentaUsuarioController::class, 'eliminar'])->name('cuenta.eliminar');
+
+
+
 });
