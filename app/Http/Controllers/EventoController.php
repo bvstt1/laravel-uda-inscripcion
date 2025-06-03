@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\Evento;
 use Carbon\Carbon;
 use App\Models\Inscripcion;
+use App\Mail\NotificacionCambioEventoMail;
+use Illuminate\Support\Facades\Mail;
+
 
 class EventoController extends Controller
 {
@@ -62,7 +65,12 @@ class EventoController extends Controller
     {
         $evento = Evento::findOrFail($id);
         $tipoAnterior = $evento->tipo;
-    
+
+        $request->merge([
+            'hora' => $request->hora ? substr($request->hora, 0, 5) : null,
+            'hora_termino' => $request->hora_termino ? substr($request->hora_termino, 0, 5) : null,
+        ]);
+
         $request->validate([
             'tipo' => 'required|in:semanal,diario',
             'titulo' => 'required|string',
@@ -73,16 +81,75 @@ class EventoController extends Controller
             'hora' => 'nullable|required_if:tipo,diario|date_format:H:i',
             'hora_termino' => 'nullable|required_if:tipo,diario|date_format:H:i|after:hora',
         ]);
-    
-        // Si pasa de semanal a diario → eliminar eventos asociados
+
+        // Normalizar campos antes de comparar
+        $normalizados = $request->all();
+        $normalizados['hora'] = $normalizados['hora'] ? substr($normalizados['hora'], 0, 5) : null;
+        $normalizados['hora_termino'] = $normalizados['hora_termino'] ? substr($normalizados['hora_termino'], 0, 5) : null;
+
+        $normalizados['descripcion'] = trim(strip_tags($normalizados['descripcion']));
+        $descripcionAnterior = trim(strip_tags($evento->descripcion));
+
+        // Detectar cambios antes de sobrescribir
+        $cambios = [];
+        $campos = ['tipo', 'titulo', 'fecha', 'lugar', 'descripcion', 'hora', 'hora_termino'];
+        foreach ($campos as $campo) {
+                if ($campo === 'descripcion') {
+                    $valorAnterior = $descripcionAnterior;
+                    $valorNuevo = $normalizados['descripcion'];
+                } else {
+                $valorAnterior = $evento->$campo;
+                $valorNuevo = $normalizados[$campo];
+
+                if ($valorAnterior instanceof \Carbon\Carbon) {
+                    $valorAnterior = $valorAnterior->format('Y-m-d');
+                }
+
+                if (in_array($campo, ['hora', 'hora_termino']) && $valorAnterior) {
+                    $valorAnterior = substr($valorAnterior, 0, 5);
+                }
+            }
+
+            if ($valorAnterior != $valorNuevo) {
+                $cambios[$campo] = [
+                    'antes' => $valorAnterior,
+                    'después' => $valorNuevo,
+                ];
+            }
+        }
+
+        // Si pasa de semanal a diario → eliminar eventos hijos
         if ($tipoAnterior === 'semanal' && $request->tipo === 'diario') {
             Evento::where('id_evento_padre', $id)->delete();
         }
-    
+
+        // Aplicar cambios
         $evento->update($request->all());
-    
+        // Notificar cambios
+        if (count($cambios) > 0) {
+            $inscripciones = Inscripcion::where('id_evento', $evento->id)->get();
+            
+            foreach ($inscripciones as $inscrito) {
+                $rut = $inscrito->rut_usuario;
+                $tipo = $inscrito->tipo_usuario;
+
+                $usuario = $tipo === 'estudiante'
+                    ? \App\Models\Estudiante::where('rut', $rut)->first()
+                    : \App\Models\Externo::where('rut', $rut)->first();
+
+                $correo = $usuario->correo ?? $usuario->email ?? null;
+                $nombre = $usuario->nombre ?? 'Usuario';
+
+                if ($correo) {
+                    Mail::to($correo)->send(new NotificacionCambioEventoMail($nombre, $evento, $cambios));
+                }
+            }
+
+        }
+
         return redirect()->route('eventos.index')->with('success', 'Evento actualizado correctamente.');
     }
+
     
 
     public function destroy($id)

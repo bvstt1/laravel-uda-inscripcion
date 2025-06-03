@@ -79,7 +79,7 @@
             <textarea name="descripcion" id="editor" rows="4" class="w-full p-2 border border-gray-300 rounded-lg">{!! $evento->descripcion !!}</textarea>
             <div id="editor-word-count" class="text-sm text-right text-gray-600 mt-1"></div>
 
-            <button type="submit"
+            <button type="button"
                 id="guardarBtn"
                 class="w-full bg-[#328E6E] hover:bg-[#287256] text-white font-bold py-2 px-4 rounded-lg transition">
                 Guardar Cambios
@@ -94,28 +94,27 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="{{ asset('js/crearEvento.js') }}"></script>
     <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        const tipoSelect = document.getElementById('tipo');
-        const tipoOriginal = '{{ $evento->tipo }}'; // tipo antes de editar
+    document.addEventListener('DOMContentLoaded', () => {
         const guardarBtn = document.getElementById('guardarBtn');
         const form = guardarBtn.closest('form');
+        const tipoSelect = document.getElementById('tipo');
+        const tipoOriginal = '{{ $evento->tipo }}';
 
         guardarBtn.addEventListener('click', (e) => {
-          const tipoActual = tipoSelect.value;
+            const tipoActual = tipoSelect.value;
 
-          if (tipoOriginal === 'semanal' && tipoActual === 'diario') {
-            e.preventDefault(); // evita envío inmediato
-
-            const confirmar = confirm(
-              '⚠️ Estás cambiando este evento de SEMANAL a DIARIO.\n\nEsto eliminará todos los eventos diarios asociados a esta semana.\n\n¿Deseas continuar?'
-            );
-
-            if (confirmar) {
-              form.submit(); // envía el formulario manualmente
+            if (tipoOriginal === 'semanal' && tipoActual === 'diario') {
+                const confirmar = confirm(
+                    '⚠️ Estás cambiando este evento de SEMANAL a DIARIO.\n\nEsto eliminará todos los eventos diarios asociados a esta semana.\n\n¿Deseas continuar?'
+                );
+                if (confirmar) {
+                    form.submit();
+                }
+            } else {
+                form.submit();
             }
-          }
         });
-      });
+    });
     </script>
 
 </body>

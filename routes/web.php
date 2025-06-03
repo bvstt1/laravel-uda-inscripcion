@@ -13,6 +13,8 @@ use App\Http\Controllers\AdminAsistenciaController;
 use App\Http\Controllers\CuentaUsuarioController;
 
 
+Route::view('/test', 'test');
+
 //
 // ==================================
 // AUTENTICACIÓN Y SELECCIÓN DE ROL
