@@ -192,14 +192,24 @@ class EventoController extends Controller
 
     public function mostrarEventosUsuarios()
     {
-        $rut = session('rut'); // o auth()->user()->rut si estás usando Auth
-        $eventosDiarios = Evento::where('tipo', 'diario')->whereNull('id_evento_padre')->get();
-        $eventosSemanales = Evento::where('tipo', 'semanal')->get();
-    
+        $rut = session('rut');
+        $hoy = Carbon::today();
+
+        $eventosDiarios = Evento::where('tipo', 'diario')
+            ->whereNull('id_evento_padre')
+            ->whereRaw("CONCAT(fecha, ' ', hora) >= ?", [Carbon::now()->format('Y-m-d H:i:s')])
+            ->get();
+
+        $eventosSemanales = Evento::where('tipo', 'semanal')
+            ->whereDate('fecha', '<=', $hoy) // ya comenzaron
+            ->whereDate('fecha', '>=', $hoy->copy()->subDays(6)) // aún no termina su semana
+            ->get();
+
         $inscripciones = Inscripcion::where('rut_usuario', $rut)->get()->keyBy('id_evento');
-    
+
         return view('user.inscripcionEventos', compact('eventosDiarios', 'eventosSemanales', 'inscripciones'));
     }
+    
     public function verDiasUsuario($id)
     {
         $eventoSemanal = Evento::findOrFail($id);
@@ -208,7 +218,9 @@ class EventoController extends Controller
         $rut = session('rut');
         $inscritos = Inscripcion::where('rut_usuario', $rut)->pluck('id_evento')->toArray();
     
-        return view('user.verDiasEvento', compact('eventoSemanal', 'eventosDiarios', 'inscritos'));
+        $hoy = Carbon::today();
+        return view('user.verDiasEvento', compact('eventoSemanal', 'eventosDiarios', 'inscritos', 'hoy'));
+
     }
 
     

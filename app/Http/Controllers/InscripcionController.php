@@ -22,6 +22,7 @@ class InscripcionController extends Controller
             ->where('estado', 'inscrito')
             ->first();
     
+            
         if ($inscripcionExistente) {
             return back()->with('success', 'Ya estás inscrito en este evento.');
         }
@@ -38,6 +39,11 @@ class InscripcionController extends Controller
     
         // Obtener datos del evento
         $evento = Evento::findOrFail($id);
+
+        $eventoDateTime = Carbon::parse("{$evento->fecha} {$evento->hora}");
+        if ($eventoDateTime->lt(Carbon::now())) {
+            return back()->with('success', 'Este evento ya ha pasado. No puedes inscribirte.');
+        }
     
         // Buscar usuario
         $usuario = $tipo === 'estudiante'

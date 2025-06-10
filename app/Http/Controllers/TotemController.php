@@ -51,15 +51,30 @@ class TotemController extends Controller
 
         return back()->with('success', '¡Asistencia registrada exitosamente!');
     }
+    
     public function seleccionarEvento()
     {
-        $eventos = Evento::where('tipo', 'diario')
+        $eventosSemanales = Evento::where('tipo', 'semanal')
+            ->orderBy('fecha')
+            ->get();
+
+        $eventosDiariosIndependientes = Evento::where('tipo', 'diario')
+            ->whereNull('id_evento_padre')
             ->whereNotNull('hora_termino')
             ->orderBy('fecha')
             ->orderBy('hora')
             ->get();
 
-        return view('totem.selector', compact('eventos'));
+        foreach ($eventosSemanales as $evento) {
+            $evento->dias = Evento::where('id_evento_padre', $evento->id)
+                ->whereNotNull('hora_termino')
+                ->orderBy('fecha')
+                ->orderBy('hora')
+                ->get();
+        }
+
+        return view('totem.selector', compact('eventosSemanales', 'eventosDiariosIndependientes'));
     }
+
 
 }
