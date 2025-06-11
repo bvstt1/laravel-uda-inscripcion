@@ -33,12 +33,17 @@ class CategoriaController extends Controller
 
     public function destroy(Categoria $categoria)
     {
-        // Ponemos a null la categoría de los eventos que la usaban
-        Evento::where('categoria_id', $categoria->id)->update(['categoria_id' => null]);
+        if ($categoria->id == 1) {
+            return redirect()->back()->with('error', 'La categoría "Sin categoría" no puede eliminarse.');
+        }
+
+        // Reasignar eventos antes de eliminar
+        Evento::where('categoria_id', $categoria->id)->update(['categoria_id' => 1]);
 
         $categoria->delete();
 
-        return redirect()->back()->with('success', 'Categoría eliminada. Los eventos asociados ahora no tienen categoría.');
+        return redirect()->back()->with('success', 'Categoría eliminada correctamente.');
     }
+
 
 }

@@ -27,7 +27,8 @@ class EstudiantesSheet implements FromCollection, WithTitle, WithHeadings
                 'estudiantes.correo',
                 'estudiantes.carrera',
                 'inscripciones.fecha_inscripcion',
-                'inscripciones.asistio_at'
+                'inscripciones.asistio_at',
+                'inscripciones.estado'
             )
             ->get()
             ->map(function ($registro) {
@@ -37,9 +38,10 @@ class EstudiantesSheet implements FromCollection, WithTitle, WithHeadings
                     $registro->carrera,
                     $registro->fecha_inscripcion,
                     $registro->asistio_at ? 'Sí' : '',
+                    $registro->estado === 'desinscrito' ? 'Desinscrito' : 'Inscrito',
                 ];
             });
-    }    
+    }
 
     public function title(): string
     {
@@ -48,6 +50,6 @@ class EstudiantesSheet implements FromCollection, WithTitle, WithHeadings
 
     public function headings(): array
     {
-        return ['RUT', 'Correo', 'Carrera', 'Fecha de Inscripción', 'Asistió'];
+        return ['RUT', 'Correo', 'Carrera', 'Fecha de Inscripción', 'Asistió', 'Estado'];
     }
 }

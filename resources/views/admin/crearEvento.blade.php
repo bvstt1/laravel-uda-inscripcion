@@ -96,7 +96,6 @@
                 <label for="categoria_id" class="block font-medium text-gray-700">Categoría</label>
                 <div class="flex gap-2">
                     <select name="categoria_id" id="categoria_id" class="flex-1 mt-1 block w-full border border-gray-300 rounded-lg shadow-sm">
-                        <option value="">Sin categoría</option>
                         @foreach($categorias as $categoria)
                             <option value="{{ $categoria->id }}">{{ $categoria->nombre }}</option>
                         @endforeach
@@ -117,20 +116,22 @@
                 <h3 class="text-lg font-semibold text-gray-700 mb-2">Categorías existentes</h3>
                 <div class="space-y-2">
                     @foreach($categorias as $cat)
+                    @if($cat->id != 1)
                     <div class="flex items-center justify-between bg-gray-100 rounded-lg px-4 py-2">
                         <div class="flex items-center gap-2">
-                            <div class="w-5 h-5 rounded-full" style="background-color: {{ $cat->color }}"></div>
-                            <span class="text-sm font-medium">{{ $cat->nombre }}</span>
+                        <div class="w-5 h-5 rounded-full" style="background-color: {{ $cat->color }}"></div>
+                        <span class="text-sm font-medium">{{ $cat->nombre }}</span>
                         </div>
                         <div class="flex gap-2">
-                            <button type="button" onclick="editarCategoria({{ $cat->id }}, '{{ $cat->nombre }}', '{{ $cat->color }}')" class="text-blue-600 text-sm hover:underline">Editar</button>
-                            <form action="{{ route('admin.categorias.destroy', $cat->id) }}" method="POST">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-red-600 text-sm hover:underline">Eliminar</button>
-                            </form>
+                        <button type="button" onclick="editarCategoria({{ $cat->id }}, '{{ $cat->nombre }}', '{{ $cat->color }}')" class="text-blue-600 text-sm hover:underline">Editar</button>
+                        <form action="{{ route('admin.categorias.destroy', $cat->id) }}" method="POST">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="text-red-600 text-sm hover:underline">Eliminar</button>
+                        </form>
                         </div>
                     </div>
+                    @endif
                     @endforeach
                 </div>
             </div>
@@ -165,63 +166,77 @@
     </div>
 
     <script>
-        document.getElementById('btnNuevaCategoria').addEventListener('click', () => {
-            document.getElementById('modalCategoria').classList.remove('hidden');
+    document.getElementById('btnNuevaCategoria').addEventListener('click', () => {
+        const modal = document.getElementById('modalCategoria');
+        modal.classList.remove('hidden');
+        modal.querySelector('form').reset();
+        modal.querySelector('form').removeAttribute('action');
+        modal.dataset.editing = 'false';
+    });
+
+    document.getElementById('btnCancelarCategoria').addEventListener('click', () => {
+        const modal = document.getElementById('modalCategoria');
+        modal.classList.add('hidden');
+        modal.querySelector('form').reset();
+        modal.dataset.editing = 'false';
+    });
+
+    document.getElementById('formCategoria').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const form = e.target;
+        const formData = new FormData(form);
+        const modal = document.getElementById('modalCategoria');
+        const isEditing = modal.dataset.editing === 'true';
+
+        const method = isEditing ? 'PUT' : 'POST';
+        const url = isEditing
+            ? form.getAttribute('action')
+            : "{{ route('admin.categorias.store') }}";
+
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: formData
         });
 
-        document.getElementById('btnCancelarCategoria').addEventListener('click', () => {
-            const modal = document.getElementById('modalCategoria');
-            modal.classList.add('hidden');
-            modal.querySelector('form').reset();
-            modal.querySelector('form').removeAttribute('action');
-            const methodInput = modal.querySelector('input[name="_method"]');
-            if (methodInput) methodInput.remove();
-        });
+        const data = await response.json();
 
-        document.getElementById('formCategoria').addEventListener('submit', async function (e) {
-            e.preventDefault();
-            const form = e.target;
-            const formData = new FormData(form);
-
-            const response = await fetch("{{ route('admin.categorias.store') }}", {
-                method: "POST",
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: formData
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                const select = document.getElementById('categoria_id');
+        if (response.ok) {
+            const select = document.getElementById('categoria_id');
+            if (isEditing) {
+                const optionToUpdate = select.querySelector(`option[value="${data.id}"]`);
+                if (optionToUpdate) {
+                    optionToUpdate.textContent = data.nombre;
+                }
+            } else {
                 const option = document.createElement('option');
                 option.value = data.id;
                 option.textContent = data.nombre;
                 select.appendChild(option);
                 select.value = data.id;
-
-                form.reset();
-                document.getElementById('modalCategoria').classList.add('hidden');
-            } else {
-                alert('Error al crear categoría');
             }
-        });
 
-        function editarCategoria(id, nombre, color) {
-            const modal = document.getElementById('modalCategoria');
-            modal.classList.remove('hidden');
-            modal.querySelector('form').action = `/admin/categorias/${id}`;
-            modal.querySelector('input[name="nombre"]').value = nombre;
-            modal.querySelector('input[name="color"]').value = color;
-
-            const methodInput = document.createElement('input');
-            methodInput.type = 'hidden';
-            methodInput.name = '_method';
-            methodInput.value = 'PUT';
-            modal.querySelector('form').appendChild(methodInput);
+            modal.classList.add('hidden');
+            form.reset();
+            modal.dataset.editing = 'false';
+        } else {
+            alert('Error al guardar la categoría');
         }
+    });
+
+    function editarCategoria(id, nombre, color) {
+        const modal = document.getElementById('modalCategoria');
+        const form = modal.querySelector('form');
+        modal.classList.remove('hidden');
+        form.setAttribute('action', `/admin/categorias/${id}`);
+        form.querySelector('input[name="nombre"]').value = nombre;
+        form.querySelector('input[name="color"]').value = color;
+        modal.dataset.editing = 'true';
+    }
     </script>
+
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="{{ asset('js/crearEvento.js') }}"></script>

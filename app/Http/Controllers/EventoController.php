@@ -44,7 +44,10 @@ class EventoController extends Controller
             'categoria_id' => 'nullable|exists:categorias,id',
         ]);
 
-        Evento::create($request->all());
+        $datos = $request->all();
+        $datos['categoria_id'] = $request->input('categoria_id') ?: 1;
+
+        Evento::create($datos);
 
         return redirect()->back()->with('success', 'Evento creado correctamente.');
     }
@@ -68,8 +71,9 @@ class EventoController extends Controller
     {
         $evento = Evento::findOrFail($id);
         $semanales = Evento::where('tipo', 'semanal')->get();
+        $categorias = Categoria::all(); // ← Agrega esto
 
-        return view('admin.editarEvento', compact('evento', 'semanales'));
+        return view('admin.editarEvento', compact('evento', 'semanales', 'categorias'));
     }
 
     public function update(Request $request, $id)
@@ -195,8 +199,12 @@ class EventoController extends Controller
 
     public function verDias($id)
     {
-        $eventoSemanal = Evento::where('tipo', 'semanal')->findOrFail($id);
-        $eventosDiarios = Evento::where('id_evento_padre', $id)->orderBy('fecha')->get();
+        $eventoSemanal = Evento::findOrFail($id);
+
+        $eventosDiarios = Evento::where('id_evento_padre', $id)
+            ->where('tipo', 'diario')
+            ->orderBy('fecha')
+            ->get();
 
         return view('admin.diasAsociados', compact('eventoSemanal', 'eventosDiarios'));
     }

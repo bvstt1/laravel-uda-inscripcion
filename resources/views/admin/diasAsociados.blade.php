@@ -8,31 +8,30 @@
 </head>
 @php use Carbon\Carbon; @endphp
 <body class="bg-gray-100 min-h-screen font-sans">
-  <div class="max-w-5xl mx-auto py-10 px-6">
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold text-[#328E6E]">
-        Eventos diarios asociados a: "{{ $eventoSemanal->titulo }}"
-      </h1>
+  <div class="max-w-7xl mx-auto py-12 px-6">
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-3xl font-bold text-[#328E6E]">📅 Eventos diarios asociados a: "{{ $eventoSemanal->titulo }}"</h1>
       <a href="{{ route('eventos.index') }}" class="text-sm text-blue-600 hover:underline">&larr; Volver al panel</a>
     </div>
 
     @if($eventosDiarios->isEmpty())
       <p class="text-gray-500 italic">No hay eventos diarios registrados para esta semana.</p>
     @else
-      <div class="grid md:grid-cols-2 gap-6">
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         @foreach($eventosDiarios as $evento)
-          <div class="bg-white rounded-xl shadow-md p-6">
+          <div class="bg-white border-l-8 rounded-xl shadow-md hover:shadow-lg p-6 border border-gray-100 transition" style="border-color: {{ $evento->categoria->color ?? '#CBD5E0' }}">
             <h3 class="text-lg font-semibold text-[#328E6E]">{{ $evento->titulo }}</h3>
-            <p class="text-sm text-gray-600"><strong>Fecha:</strong> {{ $evento->fecha }}</p>
-            <p class="text-sm text-gray-600">
-              <strong>Horario:</strong> {{ Carbon::parse($evento->hora)->format('H:i') }}
+            <p class="text-xs font-semibold text-gray-500 mt-1">Categoría: {{ $evento->categoria->nombre ?? 'Sin categoría' }}</p>
+            <p class="text-sm text-gray-700 mt-1"><strong>Fecha:</strong> {{ $evento->fecha }}</p>
+            <p class="text-sm text-gray-700"><strong>Horario:</strong> {{ Carbon::parse($evento->hora)->format('H:i') }}
               @if($evento->hora_termino)
                 - {{ Carbon::parse($evento->hora_termino)->format('H:i') }}
               @endif
             </p>
-            <p class="text-sm text-gray-600"><strong>Lugar:</strong> {{ $evento->lugar }}</p>
-            <button class="ver-mas-btn text-sm text-[#328E6E] hover:underline ml-auto" data-id="{{ $evento->id }}">Ver más</button>
+            <p class="text-sm text-gray-700"><strong>Lugar:</strong> {{ $evento->lugar }}</p>
+
             <div class="mt-4 flex gap-2">
+              <button class="ver-mas-btn text-sm bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-1 rounded-lg" data-id="{{ $evento->id }}">Ver más</button>
               <a href="{{ route('eventos.edit', $evento->id) }}" class="text-sm bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded-lg">Editar</a>
               <form action="{{ route('eventos.destroy', $evento->id) }}" method="POST" onsubmit="return confirm('¿Eliminar este evento?')">
                 @csrf

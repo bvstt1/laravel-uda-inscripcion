@@ -7,14 +7,11 @@ use App\Models\Categoria;
 
 class CategoriaSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
-        if (!Categoria::find(1)) {
-            Categoria::create([
-                'id' => 1,
-                'nombre' => 'Sin categoría',
-                'color' => '#CBD5E0'
-            ]);
-        }
+        Categoria::updateOrCreate(
+            ['id' => 1],
+            ['nombre' => 'Sin categoría', 'color' => '#CBD5E0']
+        );
     }
 }
