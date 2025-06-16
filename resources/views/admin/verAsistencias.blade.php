@@ -7,14 +7,14 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 py-10 px-6 font-sans">
-    <div class="max-w-5xl mx-auto bg-white p-6 rounded-xl shadow-lg">
-        <div class="flex justify-end space-x-3 mb-6">
+  <div class="max-w-5xl mx-auto bg-white p-6 rounded-xl shadow-lg">
+      <div class="flex justify-end space-x-3 mb-6">
         <a href="{{ route('panel') }}"
-        class="text-xs bg-[#328E6E] hover:bg-[#287256] text-white font-medium py-1 px-3 rounded-lg shadow">
+        class="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 rounded-md hover:bg-emerald-200 transition">
             ← Volver al Panel
         </a>
-        <a href="/logout" class="text-sm text-red-600 hover:underline">Cerrar sesión</a>
-    </div>
+        <a href="/logout" class="inline-block px-3 py-1 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition">Cerrar sesión</a>
+      </div>
     <h1 class="text-3xl font-bold text-[#328E6E] mb-6 text-center">Registro de Asistencias</h1>
 
     <form method="GET" action="{{ route('admin.asistencias.buscar') }}" class="flex flex-col md:flex-row gap-4 mb-8">

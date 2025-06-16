@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Inscripcion;
 use App\Models\Evento;
 use Illuminate\Support\Carbon;
+use App\Models\Categoria;
 
 class TotemController extends Controller
 {
@@ -73,7 +74,13 @@ class TotemController extends Controller
                 ->get();
         }
 
-        return view('totem.selector', compact('eventosSemanales', 'eventosDiariosIndependientes'));
+        $categorias = Categoria::all(); // ← agrega esta línea
+
+        return view('totem.selector', compact(
+            'eventosSemanales',
+            'eventosDiariosIndependientes',
+            'categorias' // ← y pásala a la vista
+        ));
     }
 
 

@@ -8,22 +8,37 @@ use App\Models\Inscripcion;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\InscripcionesPorEventoExport;
 use Illuminate\Support\Str;
-
+use App\Models\Categoria;
+use Carbon\Carbon;
 
 class AdminInscripcionController extends Controller
 {
-    public function verEventos()
+    public function verEventos(Request $request)
     {
-        $eventosDiariosAislados = Evento::where('tipo', 'diario')
-            ->whereNull('id_evento_padre')
-            ->orderBy('titulo')
-            ->get();
+        $categoriaId = $request->input('categoria_id');
+        $estado = $request->input('estado'); // 'activo', 'pasado', o null
 
-        $eventosSemanales = Evento::where('tipo', 'semanal')
-            ->orderBy('titulo')
-            ->get();
+        $queryDiarios = Evento::where('tipo', 'diario')->whereNull('id_evento_padre');
+        $querySemanales = Evento::where('tipo', 'semanal');
 
-        return view('admin.verInscripciones', compact('eventosDiariosAislados', 'eventosSemanales'));
+        if ($categoriaId) {
+            $queryDiarios->where('categoria_id', $categoriaId);
+            $querySemanales->where('categoria_id', $categoriaId);
+        }
+
+        if ($estado === 'activo') {
+            $queryDiarios->where('fecha', '>=', Carbon::today());
+            $querySemanales->where('fecha', '>=', Carbon::today());
+        } elseif ($estado === 'pasado') {
+            $queryDiarios->where('fecha', '<', Carbon::today());
+            $querySemanales->where('fecha', '<', Carbon::today());
+        }
+
+        $eventosDiariosAislados = $queryDiarios->orderBy('fecha')->get();
+        $eventosSemanales = $querySemanales->orderBy('fecha')->get();
+        $categorias = Categoria::orderBy('nombre')->get();
+
+        return view('admin.verInscripciones', compact('eventosDiariosAislados', 'eventosSemanales', 'categorias'));
     }
     public function verDiasEventoSemanal($id)
     {

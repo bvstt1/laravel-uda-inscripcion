@@ -7,7 +7,7 @@ use App\Models\AsistenciaLibre;
 use Carbon\Carbon;
 use App\Models\Estudiante;
 use App\Models\Externo;
-
+use App\Models\Admin;
 
 class TotemLibreController extends Controller
 {
@@ -21,30 +21,32 @@ class TotemLibreController extends Controller
         $request->validate([
             'rut' => 'required|string|max:12',
         ]);
-    
+
         $rut = strtoupper($request->input('rut'));
-        $fecha = \Carbon\Carbon::now()->toDateString();
-    
-        // ✅ Verificar existencia del RUT en estudiantes o externos
-        $usuarioExiste = Estudiante::where('rut', $rut)->exists() || Externo::where('rut', $rut)->exists();
-    
+        $fecha = Carbon::now()->toDateString();
+
+        // ✅ Verificar existencia del RUT en estudiantes, externos o admins
+        $usuarioExiste = Estudiante::where('rut', $rut)->exists()
+            || Externo::where('rut', $rut)->exists()
+            || Admin::where('rut', $rut)->exists();
+
         if (!$usuarioExiste) {
             return redirect()->back()->with('error', 'El RUT ingresado no está registrado en el sistema.');
         }
-    
+
         // ✅ Evitar duplicado del día
-        $yaRegistrado = \App\Models\AsistenciaLibre::where('rut', $rut)
-                            ->whereDate('created_at', $fecha)
-                            ->exists();
-    
+        $yaRegistrado = AsistenciaLibre::where('rut', $rut)
+            ->whereDate('created_at', $fecha)
+            ->exists();
+
         if ($yaRegistrado) {
             return redirect()->back()->with('error', 'Ya registraste asistencia hoy.');
         }
-    
-        \App\Models\AsistenciaLibre::create([
+
+        AsistenciaLibre::create([
             'rut' => $rut,
         ]);
-    
+
         return redirect()->back()->with('success', '¡Asistencia registrada exitosamente!');
     }
 }

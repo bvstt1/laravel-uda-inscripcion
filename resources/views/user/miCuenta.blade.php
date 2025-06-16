@@ -8,10 +8,13 @@
 </head>
 <body class="bg-gray-100 min-h-screen py-10 px-4">
   <div class="max-w-xl mx-auto bg-white p-6 rounded-xl shadow-md">
-    <div class="flex justify-between items-center mb-6">
-      <a href="{{ route('inscripcionEventos') }}" class="text-sm text-blue-600 hover:underline">&larr; Volver</a>
-      <a href="/logout" class="text-sm text-red-600 hover:underline">Cerrar sesión</a>
-    </div>
+      <div class="flex justify-end space-x-3 mb-6">
+        <a href="{{ route('inscripcionEventos') }}"
+        class="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 rounded-md hover:bg-emerald-200 transition">
+            ← Volver
+        </a>
+        <a href="/logout" class="inline-block px-3 py-1 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition">Cerrar sesión</a>
+      </div>
 
     <h1 class="text-2xl font-bold text-[#328E6E] mb-4">Editar Cuenta</h1>
 
@@ -93,7 +96,7 @@
     </form>
   </div>
 
-  <script src="{{ asset('js/vistaRut.js') }}"></script>
+  <script src="{{ asset('js/validacionLoginRegistro.js') }}"></script>
   <script>
     const tipoUsuario = "{{ session('usuario.tipo') ?? '' }}";
 

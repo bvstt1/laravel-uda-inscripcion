@@ -48,11 +48,21 @@
         </script>
     @endif
 
-        @if(session('error'))
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                {{ session('error') }}
-            </div>
-        @endif
+    @if(session('error'))
+        <div id="error-message" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            {{ session('error') }}
+        </div>
+        <script>
+            setTimeout(() => {
+                const errorMsg = document.getElementById('error-message');
+                if (errorMsg) {
+                    errorMsg.style.opacity = '0';
+                    setTimeout(() => errorMsg.remove(), 500); // Elimina tras desvanecerse
+                }
+            }, 3000); // Desaparece a los 3 segundos
+        </script>
+    @endif
+
 
         <p id="mensaje-error" class="text-sm text-red-600 mt-2"></p>
 

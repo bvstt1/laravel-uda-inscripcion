@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use App\Models\Inscripcion;
 use App\Mail\NotificacionCambioEventoMail;
 use Illuminate\Support\Facades\Mail;
+use App\Models\Categoria;
 
 
 class EventoController extends Controller
@@ -24,7 +25,9 @@ class EventoController extends Controller
             return $evento;
         });
 
-        return view('admin.crearEvento', compact('semanales'));
+        $categorias = Categoria::all(); // ← Agregado
+
+        return view('admin.crearEvento', compact('semanales', 'categorias')); // ← Agregado
     }
 
     public function store(Request $request)
@@ -38,27 +41,39 @@ class EventoController extends Controller
             'id_evento_padre' => 'nullable|exists:eventos,id',
             'hora' => 'nullable|required_if:tipo,diario|date_format:H:i',
             'hora_termino' => 'nullable|required_if:tipo,diario|date_format:H:i|after:hora',
+            'categoria_id' => 'nullable|exists:categorias,id',
         ]);
 
-        Evento::create($request->all());
+        $datos = $request->all();
+        $datos['categoria_id'] = $request->input('categoria_id') ?: 1;
+
+        Evento::create($datos);
 
         return redirect()->back()->with('success', 'Evento creado correctamente.');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $eventosSemanales = Evento::where('tipo', 'semanal')->get();
-        $eventosDiarios = Evento::where('tipo', 'diario')->whereNull('id_evento_padre')->get();
+        $categoriaId = $request->categoria_id;
 
-        return view('admin.administrarEvento', compact('eventosDiarios', 'eventosSemanales'));
+        $eventos = Evento::when($categoriaId, function ($query) use ($categoriaId) {
+            $query->where('categoria_id', $categoriaId);
+        })->get();
+
+        $eventosDiarios = $eventos->where('tipo', 'diario')->whereNull('id_evento_padre');
+        $eventosSemanales = $eventos->where('tipo', 'semanal');
+        $categorias = \App\Models\Categoria::all();
+
+        return view('admin.administrarEvento', compact('eventosDiarios', 'eventosSemanales', 'categorias'));
     }
 
     public function edit($id)
     {
         $evento = Evento::findOrFail($id);
         $semanales = Evento::where('tipo', 'semanal')->get();
+        $categorias = Categoria::all(); // ← Agrega esto
 
-        return view('admin.editarEvento', compact('evento', 'semanales'));
+        return view('admin.editarEvento', compact('evento', 'semanales', 'categorias'));
     }
 
     public function update(Request $request, $id)
@@ -184,30 +199,45 @@ class EventoController extends Controller
 
     public function verDias($id)
     {
-        $eventoSemanal = Evento::where('tipo', 'semanal')->findOrFail($id);
-        $eventosDiarios = Evento::where('id_evento_padre', $id)->orderBy('fecha')->get();
+        $eventoSemanal = Evento::findOrFail($id);
+
+        $eventosDiarios = Evento::where('id_evento_padre', $id)
+            ->where('tipo', 'diario')
+            ->orderBy('fecha')
+            ->get();
 
         return view('admin.diasAsociados', compact('eventoSemanal', 'eventosDiarios'));
     }
 
-    public function mostrarEventosUsuarios()
+
+    public function mostrarEventosUsuarios(Request $request)
     {
-        $rut = session('rut');
-        $hoy = Carbon::today();
+        $categoriaId = $request->input('categoria_id');
 
         $eventosDiarios = Evento::where('tipo', 'diario')
             ->whereNull('id_evento_padre')
-            ->whereRaw("CONCAT(fecha, ' ', hora) >= ?", [Carbon::now()->format('Y-m-d H:i:s')])
+            ->when($categoriaId, fn($query) => $query->where('categoria_id', $categoriaId))
+            ->orderBy('fecha')
+            ->orderBy('hora')
             ->get();
 
         $eventosSemanales = Evento::where('tipo', 'semanal')
-            ->whereDate('fecha', '<=', $hoy) // ya comenzaron
-            ->whereDate('fecha', '>=', $hoy->copy()->subDays(6)) // aún no termina su semana
+            ->when($categoriaId, fn($query) => $query->where('categoria_id', $categoriaId))
+            ->orderBy('fecha')
             ->get();
 
-        $inscripciones = Inscripcion::where('rut_usuario', $rut)->get()->keyBy('id_evento');
+        $categorias = Categoria::all();
+        
+        // Supongamos que $user es estudiante o externo
+        $rut = session('rut');
+        $inscripciones = Evento::inscripcionesUsuario($rut);
 
-        return view('user.inscripcionEventos', compact('eventosDiarios', 'eventosSemanales', 'inscripciones'));
+        return view('user.inscripcionEventos', compact(
+            'eventosDiarios',
+            'eventosSemanales',
+            'categorias',
+            'inscripciones'
+        ));
     }
     
     public function verDiasUsuario($id)
@@ -224,4 +254,19 @@ class EventoController extends Controller
     }
 
     
+    public function administrarEventos(Request $request)
+    {
+        $categoriaId = $request->categoria_id;
+
+        $eventos = Evento::when($categoriaId, function ($query) use ($categoriaId) {
+            $query->where('categoria_id', $categoriaId);
+        })->get();
+
+        $eventosDiarios = $eventos->where('tipo', 'diario')->whereNull('id_evento_padre');
+        $eventosSemanales = $eventos->where('tipo', 'semanal');
+        $categorias = \App\Models\Categoria::all();
+
+        return view('admin.administrarEvento', compact('eventosDiarios', 'eventosSemanales', 'categorias'));
+    }
+
 }
