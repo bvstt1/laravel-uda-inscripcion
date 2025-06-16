@@ -1,3 +1,6 @@
+// ==========================================================
+// VALIDAR RUT (Solo números y letra K final)
+// ==========================================================
 function validarRutSoloNumeros(input) {
   let valor = input.value.toUpperCase();
   const mensaje = document.getElementById('mensaje-rut');
@@ -6,18 +9,16 @@ function validarRutSoloNumeros(input) {
   // Eliminar todo lo que no sea número o K
   valor = valor.replace(/[^0-9K]/g, '');
 
-  // Solo permitir una 'K' y solo al final
+  // Permitir solo una 'K' y solo al final
   const partes = valor.match(/^(\d{0,8})(K?)$/);
   if (partes) {
     input.value = partes[1] + partes[2];
   } else {
-    // Si el valor no es válido (por ejemplo más de una K o caracteres raros)
     if (alerta) {
       alerta.textContent = 'Formato de RUT inválido.';
       alerta.classList.remove('hidden');
       alerta.style.opacity = 1;
 
-      // Desaparece a los 3 segundos
       setTimeout(() => {
         alerta.style.opacity = 0;
         setTimeout(() => alerta.classList.add('hidden'), 300);
@@ -25,7 +26,7 @@ function validarRutSoloNumeros(input) {
     }
   }
 
-  // Mostrar mensaje orientador si está vacío
+  // Mensaje orientador si está vacío
   if (input.value === '') {
     mensaje.textContent = 'Escribe tu rut sin puntos ni guión';
     mensaje.classList.remove('hidden');
@@ -35,8 +36,9 @@ function validarRutSoloNumeros(input) {
   }
 }
 
-
-
+// ==========================================================
+// VALIDAR CORREO (Solo @alumnos.uda.cl si es estudiante)
+// ==========================================================
 function validarCorreo(input) {
   const mensaje = document.getElementById('mensaje-correo');
   if (!mensaje) return;
@@ -59,12 +61,14 @@ function validarCorreo(input) {
   }
 }
 
+// ==========================================================
+// VALIDAR CONTRASEÑA (mínimo 8 caracteres, reglas complejas)
+// ==========================================================
 function validarContrasena(input) {
   const mensaje = document.getElementById('mensaje-contrasena');
   const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
 
   if (input.value === '') {
-    // Ocultar si está vacío
     mensaje.classList.add('hidden');
     mensaje.textContent = '';
     return;
@@ -79,6 +83,9 @@ function validarContrasena(input) {
   }
 }
 
+// ==========================================================
+// VALIDAR CONFIRMACIÓN DE CONTRASEÑA
+// ==========================================================
 function validarConfirmacionContrasena() {
   const contrasena = document.getElementById('contrasena');
   const confirmacion = document.getElementById('contrasena_confirmation');
@@ -101,32 +108,23 @@ function validarConfirmacionContrasena() {
   }
 }
 
-
+// ==========================================================
+// EVENTOS AL CARGAR DOM
+// ==========================================================
 document.addEventListener('DOMContentLoaded', function () {
-  const errorRut = document.getElementById('error-rut');
-  if (errorRut) {
-    setTimeout(() => {
-      errorRut.style.opacity = 0;
-    }, 3000);
-  }
+  // Ocultar automáticamente mensajes de error después de 3 segundos
+  const errores = ['error-rut', 'alerta-rut', 'alerta-correo', 'mensaje-error-login'];
+  errores.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      setTimeout(() => {
+        el.style.opacity = 0;
+        setTimeout(() => el.style.display = 'none', 300);
+      }, 3000);
+    }
+  });
 
-  const alertaRut = document.getElementById('alerta-rut');
-  if (alertaRut) {
-    setTimeout(() => {
-      alertaRut.style.opacity = 0;
-      setTimeout(() => alertaRut.style.display = 'none', 300); // Espera el fade out
-    }, 3000);
-  }
-
-  const alertaCorreo = document.getElementById('alerta-correo');
-  if (alertaCorreo) {
-    setTimeout(() => {
-      alertaCorreo.style.opacity = 0;
-      setTimeout(() => alertaCorreo.style.display = 'none', 300);
-    }, 3000);
-  }
-  
-   // Agregar validaciones a campos si están presentes
+  // Asignar validaciones en tiempo real si existen los campos
   const rut = document.getElementById('rut');
   if (rut) rut.addEventListener('input', () => validarRutSoloNumeros(rut));
 
@@ -135,14 +133,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const contrasena = document.getElementById('contrasena');
   if (contrasena) contrasena.addEventListener('input', () => validarContrasena(contrasena));
-});
 
-document.addEventListener('DOMContentLoaded', function () {
-  const errorLogin = document.getElementById('mensaje-error-login');
-  if (errorLogin) {
-    setTimeout(() => {
-      errorLogin.style.opacity = 0;
-      setTimeout(() => errorLogin.style.display = 'none', 300);
-    }, 3000);
-  }
+  const confirmar = document.getElementById('contrasena_confirmation');
+  if (confirmar) confirmar.addEventListener('input', validarConfirmacionContrasena);
 });
+// ==========================================================

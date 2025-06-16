@@ -18,11 +18,10 @@
         
         <div class="flex justify-end space-x-3 mb-6">
             <a href="{{ route('panel') }}"
-            class="text-xs bg-[#328E6E] hover:bg-[#287256] text-white font-medium py-1 px-3 rounded-lg shadow">
+            class="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 rounded-md hover:bg-emerald-200 transition">
                 ← Volver al Panel
             </a>
-            <a href="{{ route('eventos.index') }}" class="text-sm text-blue-600 hover:underline mr-2">Ver eventos</a>
-            <a href="/logout" class="text-sm text-red-600 hover:underline">Cerrar sesión</a>
+            <a href="{{ route('eventos.index') }}" class="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 rounded-md hover:bg-emerald-200 transition">Ver eventos</a>
         </div>
 
         <h2 class="text-2xl font-bold text-center text-[#328E6E] mb-4">Crear Evento</h2>
@@ -123,7 +122,6 @@
                         <span class="text-sm font-medium">{{ $cat->nombre }}</span>
                         </div>
                         <div class="flex gap-2">
-                        <button type="button" onclick="editarCategoria({{ $cat->id }}, '{{ $cat->nombre }}', '{{ $cat->color }}')" class="text-blue-600 text-sm hover:underline">Editar</button>
                         <form action="{{ route('admin.categorias.destroy', $cat->id) }}" method="POST">
                             @csrf
                             @method('DELETE')
@@ -165,80 +163,11 @@
         </div>
     </div>
 
-    <script>
-    document.getElementById('btnNuevaCategoria').addEventListener('click', () => {
-        const modal = document.getElementById('modalCategoria');
-        modal.classList.remove('hidden');
-        modal.querySelector('form').reset();
-        modal.querySelector('form').removeAttribute('action');
-        modal.dataset.editing = 'false';
-    });
-
-    document.getElementById('btnCancelarCategoria').addEventListener('click', () => {
-        const modal = document.getElementById('modalCategoria');
-        modal.classList.add('hidden');
-        modal.querySelector('form').reset();
-        modal.dataset.editing = 'false';
-    });
-
-    document.getElementById('formCategoria').addEventListener('submit', async function (e) {
-        e.preventDefault();
-        const form = e.target;
-        const formData = new FormData(form);
-        const modal = document.getElementById('modalCategoria');
-        const isEditing = modal.dataset.editing === 'true';
-
-        const method = isEditing ? 'PUT' : 'POST';
-        const url = isEditing
-            ? form.getAttribute('action')
-            : "{{ route('admin.categorias.store') }}";
-
-        const response = await fetch(url, {
-            method: method,
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: formData
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-            const select = document.getElementById('categoria_id');
-            if (isEditing) {
-                const optionToUpdate = select.querySelector(`option[value="${data.id}"]`);
-                if (optionToUpdate) {
-                    optionToUpdate.textContent = data.nombre;
-                }
-            } else {
-                const option = document.createElement('option');
-                option.value = data.id;
-                option.textContent = data.nombre;
-                select.appendChild(option);
-                select.value = data.id;
-            }
-
-            modal.classList.add('hidden');
-            form.reset();
-            modal.dataset.editing = 'false';
-        } else {
-            alert('Error al guardar la categoría');
-        }
-    });
-
-    function editarCategoria(id, nombre, color) {
-        const modal = document.getElementById('modalCategoria');
-        const form = modal.querySelector('form');
-        modal.classList.remove('hidden');
-        form.setAttribute('action', `/admin/categorias/${id}`);
-        form.querySelector('input[name="nombre"]').value = nombre;
-        form.querySelector('input[name="color"]').value = color;
-        modal.dataset.editing = 'true';
-    }
-    </script>
-
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="{{ asset('js/crearEvento.js') }}"></script>
+    <script>
+        window.categoriaStoreUrl = "{{ route('admin.categorias.store') }}";
+    </script>
+    <script src="{{ asset('js//crearEditarEvento.js') }}"></script>
 </body>
 </html>

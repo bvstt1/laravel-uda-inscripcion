@@ -18,6 +18,17 @@ class Evento extends Model
         'categoria_id' // ← agrega esta línea
     ];
 
+    public static function inscripcionesUsuario($rut)
+    {
+        $inscripciones = \App\Models\Inscripcion::where('rut_usuario', $rut)->get();
+        $resultado = [];
+
+        foreach ($inscripciones as $ins) {
+            $resultado[$ins->id_evento] = $ins;
+        }
+
+        return $resultado;
+    }
 
     public function categoria()
     {

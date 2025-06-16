@@ -70,6 +70,6 @@
   </div>
 
 
-<script src="{{ asset('js/vistaRut.js') }}"></script>
+<script src="{{ asset('js/validacionLoginRegistro.js') }}"></script>
 </body>
 </html>

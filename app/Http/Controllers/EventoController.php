@@ -209,28 +209,35 @@ class EventoController extends Controller
         return view('admin.diasAsociados', compact('eventoSemanal', 'eventosDiarios'));
     }
 
+
     public function mostrarEventosUsuarios(Request $request)
     {
-        $rut = session('rut');
-        $hoy = \Carbon\Carbon::today();
-        $categoriaId = $request->categoria_id;
+        $categoriaId = $request->input('categoria_id');
 
         $eventosDiarios = Evento::where('tipo', 'diario')
             ->whereNull('id_evento_padre')
-            ->whereRaw("CONCAT(fecha, ' ', hora) >= ?", [\Carbon\Carbon::now()->format('Y-m-d H:i:s')])
-            ->when($categoriaId, fn($q) => $q->where('categoria_id', $categoriaId))
+            ->when($categoriaId, fn($query) => $query->where('categoria_id', $categoriaId))
+            ->orderBy('fecha')
+            ->orderBy('hora')
             ->get();
 
         $eventosSemanales = Evento::where('tipo', 'semanal')
-            ->whereDate('fecha', '<=', $hoy)
-            ->whereDate('fecha', '>=', $hoy->copy()->subDays(6))
-            ->when($categoriaId, fn($q) => $q->where('categoria_id', $categoriaId))
+            ->when($categoriaId, fn($query) => $query->where('categoria_id', $categoriaId))
+            ->orderBy('fecha')
             ->get();
 
-        $inscripciones = Inscripcion::where('rut_usuario', $rut)->get()->keyBy('id_evento');
         $categorias = Categoria::all();
+        
+        // Supongamos que $user es estudiante o externo
+        $rut = session('rut');
+        $inscripciones = Evento::inscripcionesUsuario($rut);
 
-        return view('user.inscripcionEventos', compact('eventosDiarios', 'eventosSemanales', 'inscripciones', 'categorias'));
+        return view('user.inscripcionEventos', compact(
+            'eventosDiarios',
+            'eventosSemanales',
+            'categorias',
+            'inscripciones'
+        ));
     }
     
     public function verDiasUsuario($id)

@@ -34,6 +34,7 @@ Route::view('/registroExterno', 'registroExterno')->name('registroExterno');
 Route::post('/registroEstudiante', [RegistroEstudianteController::class, 'store']);
 Route::post('/registroExterno', [RegistroExternoController::class, 'store']);
 
+
 //
 // ============================================
 // RUTAS PROTEGIDAS (AUTENTICACIÓN ADMIN/USERS)
@@ -99,6 +100,7 @@ Route::middleware('session.auth')->group(function () {
     Route::get('/totem', [TotemController::class, 'seleccionarEvento'])->name('totem.selector');
     Route::get('/totem/evento/{id}', [TotemController::class, 'form'])->name('totem.form');
     Route::post('/totem/evento/{id}/asistencia', [TotemController::class, 'registrarAsistencia'])->name('totem.registrar');
+    Route::get('/totem/eventos', [EventoController::class, 'seleccionarEventoTotem'])->name('totem.seleccionar');
 
     //
     // TOTEM LIBRE

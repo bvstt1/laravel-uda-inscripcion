@@ -11,7 +11,7 @@
   <div class="max-w-6xl mx-auto">
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-2xl font-bold text-[#328E6E]">Inscritos en: "{{ $evento->titulo }}"</h1>
-      <a href="{{ route('admin.inscripciones') }}" class="text-sm text-blue-600 hover:underline">&larr; Volver</a>
+      <a href="{{ route('admin.inscripciones') }}" class="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 rounded-md hover:bg-emerald-200 transition">&larr; Volver</a>
     </div>
 
     @if($inscripcionesEstudiantes->isEmpty() && $inscripcionesExternos->isEmpty())

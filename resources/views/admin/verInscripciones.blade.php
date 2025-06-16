@@ -14,8 +14,8 @@
     <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
       <h1 class="text-4xl font-bold text-[#328E6E]">📋 Gestión de Inscripciones</h1>
       <div class="flex gap-4 text-sm">
-        <a href="{{ route('panel') }}" class="text-blue-600 hover:underline">&larr; Volver al panel</a>
-        <a href="/logout" class="text-red-600 hover:underline">Cerrar sesión</a>
+        <a href="{{ route('panel') }}" class="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 rounded-md hover:bg-emerald-200 transition">&larr; Volver al panel</a>
+        <a href="/logout" class="inline-block px-3 py-1 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition">Cerrar sesión</a>
       </div>
     </div>
 

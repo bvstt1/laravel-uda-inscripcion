@@ -6,19 +6,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Eventos Disponibles</title>
+  <link rel="stylesheet" href="{{ asset('css/ckeditor-content.css') }}">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
-  <style>
-    body { font-family: 'Inter', sans-serif; }
-  </style>
+  <style> body { font-family: 'Inter', sans-serif; } </style>´
 </head>
 <body class="bg-gray-50 min-h-screen text-gray-800">
   <div class="max-w-7xl mx-auto py-10 px-6">
     <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
-      <h1 class="text-4xl font-bold text-[#1B4332]">📅 Eventos Disponibles</h1>
+      <h1 class="text-4xl font-bold text-[#1B4332]">🗓️ Eventos Disponibles</h1>
       <div class="flex gap-4 text-sm">
-        <a href="{{ route('cuenta.formulario') }}" class="text-[#1B4332] hover:underline">👤 Mi cuenta</a>
-        <a href="/logout" class="text-red-600 hover:underline">🔒 Cerrar Sesión</a>
+        <a href="{{ route('cuenta.formulario') }}" class="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 rounded-md hover:bg-emerald-200 transition">👤 Mi cuenta</a>
+        <a href="/logout" class="inline-block px-3 py-1 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition">🔐 Cerrar Sesión</a>
       </div>
     </div>
 
@@ -27,17 +26,16 @@
         {{ session('success') }}
       </div>
       <script>
-          setTimeout(() => {
+        setTimeout(() => {
           const msg = document.getElementById('success-message');
           if (msg) {
-              msg.style.opacity = '0';
-              setTimeout(() => msg.remove(), 500);
+            msg.style.opacity = '0';
+            setTimeout(() => msg.remove(), 500);
           }
-          }, 3000);
+        }, 3000);
       </script>
     @endif
 
-    <!-- FILTRO POR CATEGORÍA -->
     <form method="GET" class="mb-8 flex items-center gap-2">
       <label class="text-sm font-medium text-gray-700">Filtrar por categoría:</label>
       <select name="categoria_id" onchange="this.form.submit()" class="p-2 border rounded-lg">
@@ -50,7 +48,6 @@
       </select>
     </form>
 
-    <!-- EVENTOS DIARIOS -->
     <section class="mb-16">
       <h2 class="text-2xl font-semibold mb-4 text-[#2D6A4F]">Eventos Diarios</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -66,14 +63,12 @@
             <p class="text-xs font-semibold text-gray-500 mt-1">Categoría: {{ $nombreCategoria }}</p>
             <p class="text-sm text-gray-700 mt-1"><strong>Fecha:</strong> {{ $evento->fecha }}</p>
             <p class="text-sm text-gray-700"><strong>Horario:</strong> {{ Carbon::parse($evento->hora)->format('H:i') }}
-              @if($evento->hora_termino) - {{ Carbon::parse($evento->hora_termino)->format('H:i') }} @endif
-            </p>
+              @if($evento->hora_termino) - {{ Carbon::parse($evento->hora_termino)->format('H:i') }} @endif</p>
             <p class="text-sm text-gray-700"><strong>Lugar:</strong> {{ $evento->lugar }}</p>
             <button class="ver-mas-btn text-sm text-[#328E6E] hover:underline mt-2" data-id="{{ $evento->id }}">Ver más</button>
-
             <div class="mt-4">
               @if ($estado === 'inscrito')
-                <form method="POST" action="{{ route('desinscribirse', $evento->id) }}" onsubmit="return confirm('¿Estás seguro que deseas desinscribirte?')">
+                <form method="POST" action="{{ route('desinscribirse', $evento->id) }}" onsubmit="return confirm('¿Estás seguro que deseas desinscribirte?, una ves desinscrito no podras volver a inscribirte a este evento.')">
                   @csrf @method('DELETE')
                   <button type="submit" class="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-xl transition">Desinscribirse</button>
                 </form>
@@ -87,13 +82,23 @@
               @endif
             </div>
           </div>
+
+          <div id="modal-{{ $evento->id }}" class="fixed inset-0 bg-black bg-opacity-50 justify-center items-center hidden z-50">
+            <div class="bg-white p-6 rounded-xl max-w-md w-full relative">
+              <h4 class="text-lg font-bold mb-2 text-[#2D6A4F]">{{ $evento->titulo }}</h4>
+              <p class="text-sm text-gray-700 mb-2"><strong>Descripción:</strong></p>
+              <div class="editor-content text-sm text-gray-600">{!! $evento->descripcion !!}</div>
+              <button class="cerrar-modal-btn absolute top-2 right-2 text-gray-500 hover:text-red-500 text-xl" data-id="{{ $evento->id }}">&times;</button>
+            </div>
+          </div>
+
+
         @empty
           <p class="text-gray-500 italic">No hay eventos diarios disponibles.</p>
         @endforelse
       </div>
     </section>
 
-    <!-- EVENTOS SEMANALES -->
     <section>
       <h2 class="text-2xl font-semibold mb-4 text-[#2D6A4F]">Eventos Semanales</h2>
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -105,18 +110,29 @@
             $nombreCategoria = $evento->categoria->nombre ?? 'Sin categoría';
           @endphp
 
-          <div class="bg-white border-l-8 rounded-xl shadow-md hover:shadow-lg p-6 border border-gray-100 transition" style="border-left-color: {{ $color }};">
+          <div class="bg-white border-l-8 rounded-xl shadow-md hover:shadow-lg p-6 border border-gray-100 transition relative" style="border-left-color: {{ $color }};">
             <h3 class="text-lg font-semibold text-[#328E6E]">{{ $evento->titulo }}</h3>
             <p class="text-xs font-semibold text-gray-500 mt-1">Categoría: {{ $nombreCategoria }}</p>
             <p class="text-sm text-gray-700 mt-1"><strong>Semana:</strong> {{ $inicioSemana->format('Y-m-d') }} al {{ $finSemana->format('Y-m-d') }}</p>
             <p class="text-sm text-gray-700"><strong>Lugar:</strong> {{ $evento->lugar }}</p>
             <button class="ver-mas-btn text-sm text-[#328E6E] hover:underline mt-2" data-id="{{ $evento->id }}">Ver más</button>
             <div class="mt-4">
-              <a href="{{ route('usuario.evento.dias', $evento->id) }}" class="block w-full text-center bg-[#2D6A4F] hover:bg-[#1B4332] text-white py-2 px-4 rounded-xl transition">
-                Ver días disponibles
+              <a href="{{ route('usuario.evento.dias', $evento->id) }}" 
+                class="mt-4 block w-full text-center bg-[#328E6E] hover:bg-[#287256] text-white py-2 px-4 rounded-xl font-semibold transition shadow-sm">
+                📅 Ingresar al evento
               </a>
             </div>
           </div>
+
+          <div id="modal-{{ $evento->id }}" class="fixed inset-0 bg-black bg-opacity-50 justify-center items-center hidden z-50">
+            <div class="bg-white p-6 rounded-xl max-w-md w-full relative">
+              <h4 class="text-lg font-bold mb-2 text-[#2D6A4F]">{{ $evento->titulo }}</h4>
+              <p class="text-sm text-gray-700 mb-2"><strong>Descripción:</strong></p>
+              <div class="editor-content text-sm text-gray-600">{!! $evento->descripcion !!}</div>
+              <button class="cerrar-modal-btn absolute top-2 right-2 text-gray-500 hover:text-red-500 text-xl" data-id="{{ $evento->id }}">&times;</button>
+            </div>
+          </div>
+
         @empty
           <p class="text-gray-500 italic">No hay eventos semanales disponibles.</p>
         @endforelse

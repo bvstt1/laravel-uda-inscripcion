@@ -17,8 +17,14 @@
     <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
       <h1 class="text-4xl font-bold text-[#328E6E]">Panel de Administración</h1>
       <div class="flex gap-4 text-sm">
-        <a href="{{ route('panel') }}" class="text-blue-600 hover:underline">&larr; Volver al panel</a>
-        <a href="/logout" class="text-red-600 hover:underline">Cerrar Sesión</a>
+          <a href="{{ route('panel') }}"
+            class="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 rounded-md hover:bg-emerald-200 transition">
+            ← Volver al panel
+          </a>
+          <a href="/logout"
+            class="inline-block px-3 py-1 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition">
+            🔓 Cerrar sesión
+          </a>
       </div>
     </div>
 
@@ -105,14 +111,14 @@
               <button class="ver-mas-btn text-sm text-emerald-600 hover:underline ml-auto" data-id="{{ $evento->id }}">Ver más</button>
             </div>
           </div>
-
+          <!-- Modal para evento diario -->
           <div id="modal-{{ $evento->id }}" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden justify-center items-center">
             <div class="bg-white rounded-lg max-w-xl w-full p-6 shadow-xl overflow-y-auto max-h-[90vh] relative">
               <h2 class="text-2xl font-bold text-[#328E6E] mb-4">{{ $evento->titulo }}</h2>
               <p class="text-sm text-gray-600 mb-1"><strong>Fecha:</strong> {{ $evento->fecha }}</p>
               <p class="text-sm text-gray-600 mb-1"><strong>Horario:</strong> {{ Carbon::parse($evento->hora)->format('H:i') }} @if($evento->hora_termino) - {{ Carbon::parse($evento->hora_termino)->format('H:i') }} @endif</p>
               <p class="text-sm text-gray-600 mb-4"><strong>Lugar:</strong> {{ $evento->lugar }}</p>
-              <div class="prose prose-sm max-w-none text-gray-700">{!! $evento->descripcion_html ?? $evento->descripcion !!}</div>
+              <div class="prose prose-sm max-w-none text-gray-700"><strong>Descripción:</strong>{!! $evento->descripcion_html ?? $evento->descripcion !!}</div>
               <button class="cerrar-modal-btn absolute top-2 right-4 text-gray-500 hover:text-gray-700 text-xl" data-id="{{ $evento->id }}">&times;</button>
             </div>
           </div>
@@ -164,9 +170,19 @@
                 @method('DELETE')
                 <button type="submit" class="text-sm bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded-lg">Eliminar</button>
               </form>
+              <button class="ver-mas-btn text-sm text-emerald-600 hover:underline ml-auto" data-id="{{ $evento->id }}">Ver más</button>
             </div>
           </div>
-
+          <!-- Modal para evento semanal -->
+          <div id="modal-{{ $evento->id }}" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden justify-center items-center">
+            <div class="bg-white rounded-lg max-w-xl w-full p-6 shadow-xl overflow-y-auto max-h-[90vh] relative">
+              <h2 class="text-2xl font-bold text-[#328E6E] mb-4">{{ $evento->titulo }}</h2>
+              <p class="text-sm text-gray-600 mb-1"><strong>Semana:</strong> {{ $inicioSemana->format('Y-m-d') }} al {{ $finSemana->format('Y-m-d') }}</p>
+              <p class="text-sm text-gray-600 mb-1"><strong>Lugar:</strong> {{ $evento->lugar }}</p>
+              <div class="prose prose-sm max-w-none text-gray-700"><strong>Descripción:</strong>{!! $evento->descripcion_html ?? $evento->descripcion !!}</div>
+              <button class="cerrar-modal-btn absolute top-2 right-4 text-gray-500 hover:text-gray-700 text-xl" data-id="{{ $evento->id }}">&times;</button>
+            </div>
+          </div>
         @empty
           <p class="text-gray-500 italic">No hay eventos que coincidan con los filtros seleccionados.</p>
         @endforelse
