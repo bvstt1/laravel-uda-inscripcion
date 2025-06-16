@@ -1,29 +1,67 @@
 <!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"></head>
-<body>
-<p>Hola {{ $nombre }},</p>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Confirmación de inscripción</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f4f4f4; font-family: Arial, sans-serif; color: #333;">
+  <table align="center" width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    
+    {{-- Cabecera --}}
+    <tr>
+      <td style="background-color: #328E6E; padding: 20px; text-align: center;">
+        <h2 style="color: white; margin: 0;">Confirmación de Inscripción</h2>
+        <p style="color: white; margin: 5px 0 0;">Universidad de Atacama</p>
+      </td>
+    </tr>
 
-<p>¡Tu inscripción ha sido confirmada exitosamente! 🎉<br>
-Gracias por registrarte en el siguiente evento:</p>
+    {{-- Cuerpo --}}
+    <tr>
+      <td style="padding: 30px;">
+        <p>Hola <strong>{{ $nombre }}</strong>,</p>
 
-<ul>
-  <li>📅 <strong>Evento:</strong> {{ $evento }}</li>
-  <li>📍 <strong>Lugar:</strong> {{ $lugar }}</li>
-  <li>🕒 <strong>Fecha y hora:</strong> {{ $fechaHora }}</li>
-</ul>
+        <p>¡Tu inscripción ha sido confirmada exitosamente! 🎉</p>
 
-<p>🔐 <strong>Código QR de acceso:</strong></p>
-<img src="{{ $qrPath }}" alt="Código QR" style="width: 200px;" />
+        <p>Gracias por registrarte en el siguiente evento:</p>
 
-<p>Te recordamos que deberás presentar tu <strong>código QR o RUT</strong> al momento de ingresar para validar tu asistencia.</p>
+        <table cellpadding="6" cellspacing="0" style="width: 100%; font-size: 15px;">
+          <tr>
+            <td><strong>📅 Evento:</strong></td>
+            <td>{{ $evento }}</td>
+          </tr>
+          <tr>
+            <td><strong>📍 Lugar:</strong></td>
+            <td>{{ $lugar }}</td>
+          </tr>
+          <tr>
+            <td><strong>🕒 Fecha y hora:</strong></td>
+            <td>{{ $fechaHora }}</td>
+          </tr>
+        </table>
 
-<p>Si tienes dudas o necesitas asistencia, no dudes en contactarnos.</p>
+        <p style="margin-top: 25px;"><strong>🔐 Código QR de acceso:</strong></p>
 
-<p>¡Nos vemos pronto!</p>
+        <div style="text-align: center; margin: 20px 0;">
+          <img src="{{ $qrPath }}" alt="Código QR" width="200" height="200" style="display: inline-block;" />
+        </div>
 
-<p><strong>Sistema de Registro de Asistencia</strong><br>
-Universidad de Atacama<br>
-<small>[correo@uda.cl] | [sitio-web.cl]</small></p>
+        <p>📌 Recuerda presentar tu <strong>código QR o RUT</strong> al ingresar al evento para validar tu asistencia.</p>
+
+        <p>Si tienes dudas o necesitas ayuda, no dudes en contactarnos.</p>
+
+        <p>¡Nos vemos pronto!</p>
+      </td>
+    </tr>
+
+    {{-- Pie --}}
+    <tr>
+      <td style="background-color: #f0f0f0; padding: 20px; text-align: center; font-size: 13px; color: #666;">
+        <strong>Sistema de Registro de Asistencia</strong><br>
+        Universidad de Atacama<br>
+        <a href="mailto:correo@uda.cl" style="color: #328E6E; text-decoration: none;">correo@uda.cl</a> | 
+        <a href="https://sitio-web.cl" target="_blank" style="color: #328E6E; text-decoration: none;">sitio-web.cl</a>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>

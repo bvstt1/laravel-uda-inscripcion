@@ -12,6 +12,7 @@ use App\Http\Controllers\TotemLibreController;
 use App\Http\Controllers\AdminAsistenciaController;
 use App\Http\Controllers\CuentaUsuarioController;
 use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\RecuperarContrasenaController;
 
 Route::view('/test', 'test');
 
@@ -33,6 +34,19 @@ Route::view('/registroEstudiante', 'registroEstudiante')->name('registroEstudian
 Route::view('/registroExterno', 'registroExterno')->name('registroExterno');
 Route::post('/registroEstudiante', [RegistroEstudianteController::class, 'store']);
 Route::post('/registroExterno', [RegistroExternoController::class, 'store']);
+
+//
+// ============================================
+// RECUPERACIÓN DE CONTRASEÑA
+// ============================================
+
+Route::get('/recuperarContrasena', [RecuperarContrasenaController::class, 'formularioSolicitud'])->name('password.request');
+Route::post('/recuperarContrasena', [RecuperarContrasenaController::class, 'enviarCorreo'])->name('password.email');
+
+Route::get('/restablecerContrasena/{token}', [RecuperarContrasenaController::class, 'formularioNueva'])->name('password.reset');
+Route::post('/restablecerContrasena', [RecuperarContrasenaController::class, 'actualizarContrasena'])->name('password.update');
+
+
 
 
 //

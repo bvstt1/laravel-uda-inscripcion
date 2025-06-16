@@ -40,7 +40,9 @@
       <span id="mensaje-contrasena" class="text-red-500 text-sm hidden"></span>
 
       <div class="text-right">
-        <a href="#" class="text-sm text-[#328E6E] hover:underline">¿Has olvidado tu contraseña?</a>
+        <a href="{{ route('password.request') }}" class="text-sm text-[#328E6E] hover:underline">
+          ¿Has olvidado tu contraseña?
+        </a>
       </div>
 
       <button type="submit" name="login"
