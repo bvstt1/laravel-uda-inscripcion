@@ -12,10 +12,11 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
-    libzip-dev
+    libzip-dev \
+    default-mysql-client
 
 # Instala extensiones PHP necesarias
-RUN docker-php-ext-install bcmath gd zip
+RUN docker-php-ext-install bcmath gd zip pdo_mysql
 
 # Instala Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -30,7 +31,7 @@ RUN composer install --no-dev --optimize-autoloader \
 
 EXPOSE 8000
 
-# Ejecuta Laravel
+# Comandos Laravel
 CMD php artisan config:cache \
     && php artisan route:cache \
     && php artisan view:cache \
