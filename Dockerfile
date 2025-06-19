@@ -1,6 +1,6 @@
 FROM php:8.2-fpm
 
-# Instala herramientas del sistema
+# Instala dependencias del sistema
 RUN apt-get update && apt-get install -y \
     build-essential \
     curl \
@@ -11,10 +11,11 @@ RUN apt-get update && apt-get install -y \
     npm \
     libpng-dev \
     libjpeg-dev \
-    libfreetype6-dev
+    libfreetype6-dev \
+    libzip-dev
 
-# Instala extensiones PHP requeridas por tus paquetes
-RUN docker-php-ext-install bcmath gd
+# Instala extensiones PHP necesarias
+RUN docker-php-ext-install bcmath gd zip
 
 # Instala Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -22,12 +23,14 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www
 COPY . .
 
+# Instala dependencias y compila
 RUN composer install --no-dev --optimize-autoloader \
     && npm install \
     && npm run build
 
 EXPOSE 8000
 
+# Ejecuta Laravel
 CMD php artisan config:cache \
     && php artisan route:cache \
     && php artisan view:cache \
