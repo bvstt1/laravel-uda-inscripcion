@@ -1,5 +1,9 @@
 FROM php:8.2-fpm
 
+
+# TRIGGER DEPLOY
+RUN echo "trigger migrate"
+
 # Instala dependencias del sistema
 RUN apt-get update && apt-get install -y \
     build-essential \
