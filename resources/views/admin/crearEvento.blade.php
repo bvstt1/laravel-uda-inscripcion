@@ -168,6 +168,6 @@
     <script>
         window.categoriaStoreUrl = "{{ route('admin.categorias.store') }}";
     </script>
-    <script src="{{ asset('js//crearEditarEvento.js') }}"></script>
+    <script src="{{ secure_asset('js//crearEditarEvento.js') }}"></script>
 </body>
 </html>

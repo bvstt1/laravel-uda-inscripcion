@@ -60,6 +60,7 @@
     </div>
   </div>
   
-  <script src="{{ asset('js/validacionLoginRegistro.js') }}"></script>
+  <script src="{{ secure_asset('js/validacionLoginRegistro.js') }}"></script>
+
 </body>
 </html>
