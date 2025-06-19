@@ -12,7 +12,7 @@ class AdminSeeder extends Seeder
     {
         Admin::create([
             'rut' => '209950456',
-            'contrasena' => Hash::make('admin123'),
+            'contrasena' => Hash::make('admin123qr6(PS?0QWp6'),
         ]);
     }
 }
