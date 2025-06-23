@@ -385,10 +385,22 @@ const editorConfig = {
 	}
 };
 
-ClassicEditor.create(document.querySelector('#editor'), editorConfig).then(editor => {
-	const wordCount = editor.plugins.get('WordCount');
+document.addEventListener('DOMContentLoaded', () => {
+	const editorElement = document.querySelector('#editor');
 
-	// // document.querySelector('#editor-menu-bar').appendChild(editor.ui.view.menuBarView.element);
+	if (!editorElement) {
+		console.warn('No se encontró el textarea #editor');
+		return;
+	}
 
-	return editor;
+	ClassicEditor
+		.create(editorElement, editorConfig)
+		.then(editor => {
+			const wordCount = editor.plugins.get('WordCount');
+			// Puedes agregar más lógica si quieres
+			console.log('CKEditor inicializado correctamente');
+		})
+		.catch(error => {
+			console.error('Error al crear el CKEditor:', error);
+		});
 });
