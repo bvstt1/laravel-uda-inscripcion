@@ -91,13 +91,13 @@
       </select>
 
       <button type="submit" name="registro-est"
-        class="w-full text-white py-2 rounded-lg bg-[#328E6E] transition hover:bg-[#287256] shadow-lg">
+        class="w-full text-white py-2 rounded-lg bg-[#328E6E] transition hover:bg-[#287256] shadow-lg transform hover:scale-[1.02]">
         Registrar
       </button>
     </form>
 
     <div class="mt-4 text-center">
-      <a href="./login" class="text-sm text-gray-600 hover:underline">Ya tienes cuenta? Inicia Sesión aquí</a>
+      <a href="/login" class="text-sm text-gray-600 hover:underline">Ya tienes cuenta? Inicia Sesión aquí</a>
     </div>
 
     <div class="mt-6 flex justify-center">
@@ -105,6 +105,6 @@
     </div>
   </div>
 
-<script src="{{ secure_asset('js/validacionLoginRegistro.js') }}"></script>
+<script src="{{ asset('js/validacionLoginRegistro.js') }}"></script>
 </body>
 </html>

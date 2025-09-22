@@ -46,7 +46,7 @@
       </div>
 
       <button type="submit" name="login"
-        class="w-full bg-[#328E6E] text-white py-2 rounded-lg hover:bg-[#287256] transition shadow-lg">
+        class="w-full bg-[#328E6E] text-white py-2 rounded-lg hover:bg-[#287256] transition shadow-lg transform hover:scale-[1.02]">
         Iniciar Sesión
       </button>
     </form>
@@ -56,11 +56,10 @@
       <a href="/userSelection" class="text-sm text-gray-600 hover:underline">Crear una nueva cuenta</a>
     </div>
     <div class="mt-6 flex justify-center">
-      <img src="../img/logo-uda.png" alt="Logo Universidad de Atacama" class="h-12">
+      <img src="{{ asset('img/logo-uda.png') }}" alt="Logo Universidad de Atacama" class="h-12">
     </div>
   </div>
   
-  <script src="{{ secure_asset('js/validacionLoginRegistro.js') }}"></script>
-
+  <script src="{{ asset('js/validacionLoginRegistro.js') }}"></script>
 </body>
 </html>

@@ -55,7 +55,7 @@
       @enderror
       
       <button type="submit" name="registro-ext"
-        class="w-full text-white py-2 rounded-lg bg-[#328E6E] transition hover:bg-[#287256] shadow-lg">
+        class="w-full text-white py-2 rounded-lg bg-[#328E6E] transition hover:bg-[#287256] shadow-lg  transform hover:scale-[1.02]">
         Registrar
       </button>
     </form>
@@ -70,6 +70,6 @@
   </div>
 
 
-<script src="{{ secure_asset('js/validacionLoginRegistro.js') }}"></script>
+<script src="{{ asset('js/validacionLoginRegistro.js') }}"></script>
 </body>
 </html>
