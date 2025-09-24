@@ -21,7 +21,7 @@ $ahora = Carbon::now();
       <h1 class="text-4xl font-bold text-[#328E6E]">Panel de Administración</h1>
       <div class="flex gap-4 text-sm">
         <a href="{{ route('panel') }}" class="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 rounded-md hover:bg-emerald-200 transition">← Volver al panel</a>
-        <a href="/logout" class="inline-block px-3 py-1 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition">🔓 Cerrar sesión</a>
+        <a href="/logout" class="inline-block px-3 py-1 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition">Cerrar sesión</a>
       </div>
     </div>
 
@@ -88,7 +88,7 @@ $ahora = Carbon::now();
 
     <!-- Eventos Diarios -->
     <section class="mb-16">
-      <h2 class="text-2xl font-semibold text-gray-800 mb-4">📅 Eventos Diarios</h2>
+      <h2 class="text-2xl font-semibold text-gray-800 mb-4">Eventos Diarios</h2>
       <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @forelse($eventosDiariosFiltrados as $evento)
           @php
@@ -131,7 +131,7 @@ $ahora = Carbon::now();
 
     <!-- Eventos Semanales -->
     <section>
-      <h2 class="text-2xl font-semibold text-gray-800 mb-4">🗓️ Eventos Semanales</h2>
+      <h2 class="text-2xl font-semibold text-gray-800 mb-4">Eventos Semanales</h2>
       <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @forelse($eventosSemanalesFiltrados as $evento)
           @php
