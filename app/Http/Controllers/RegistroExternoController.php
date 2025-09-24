@@ -66,6 +66,6 @@ class RegistroExternoController extends Controller
         Session::put('rut', $externo->rut);
         Session::put('tipo_usuario', 'externo');
 
-        return redirect()->route('inscripcionEventos')->with('success', 'Usuario registrado exitosamente');
+        return redirect()->route('login')->with('success', 'Registro completado con éxito.');
     }
 }

@@ -11,26 +11,27 @@
     body { font-family: 'Inter', sans-serif; }
   </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex items-center justify-center py-12 px-4">
-  <div class="w-full max-w-xl bg-white p-8 rounded-2xl shadow-lg">
+<body class="bg-gray-50 min-h-screen flex justify-center py-12 px-4">
+
+  <div class="w-full max-w-3xl bg-white rounded-2xl shadow-lg p-8 space-y-10">
+
     <!-- Header -->
-    <div class="flex justify-between items-center mb-8">
+    <div class="flex justify-between items-center">
       <h1 class="text-3xl font-bold text-[#328E6E]">Mi Cuenta</h1>
       <div class="flex gap-2">
         <a href="{{ route('inscripcionEventos') }}" class="px-3 py-1 bg-emerald-100 text-emerald-800 rounded-md hover:bg-emerald-200 transition">← Volver</a>
-        <a href="/logout" class="px-3 py-1 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition">Cerrar sesión</a>
       </div>
     </div>
 
     <!-- Mensajes -->
     @if (session('success'))
-      <div class="bg-green-100 border border-green-300 text-green-700 rounded-lg px-4 py-3 mb-4">
+      <div class="bg-green-100 border border-green-300 text-green-700 rounded-lg px-4 py-3">
         {{ session('success') }}
       </div>
     @endif
 
     @if ($errors->any())
-      <div class="bg-red-100 border border-red-300 text-red-700 rounded-lg px-4 py-3 mb-4">
+      <div class="bg-red-100 border border-red-300 text-red-700 rounded-lg px-4 py-3">
         <ul class="list-disc list-inside text-sm">
           @foreach ($errors->all() as $error)
             <li>{{ $error }}</li>
@@ -39,81 +40,134 @@
       </div>
     @endif
 
-    <!-- Formulario -->
-    <form action="{{ route('cuenta.actualizar') }}" method="POST" class="space-y-6">
-      @csrf
-      <div>
-        <label for="rut" class="block text-sm font-semibold text-gray-700">RUT</label>
-        <input type="text" id="rut" name="rut" value="{{ $usuario->rut }}" readonly
-               class="w-full border border-gray-300 rounded-xl px-4 py-2 bg-gray-100 text-gray-500 cursor-not-allowed">
-      </div>
+    <!-- Sección: Datos Personales -->
+    <section class="space-y-6">
+      <h2 class="text-xl font-semibold text-gray-700 border-b pb-2 mb-4">Modificar Datos Personales</h2>
+      <form action="{{ route('cuenta.actualizar') }}" method="POST" class="space-y-4">
+        @csrf
 
-      @php $esEstudiante = session('usuario.tipo') === 'estudiante'; @endphp
-      @if (!$esEstudiante)
+        <!-- RUT (solo lectura) -->
         <div>
-          <label for="correo" class="block text-sm font-semibold text-gray-700">Correo</label>
-          <input type="email" id="correo" name="correo" value="{{ $usuario->correo }}" required
+          <label for="rut" class="block text-sm font-semibold text-gray-700">RUT</label>
+          <input type="text" id="rut" name="rut" value="{{ $usuario->rut }}" readonly
+                 class="w-full border border-gray-300 rounded-xl px-4 py-2 bg-gray-100 text-gray-500 cursor-not-allowed">
+        </div>
+
+        <!-- Nombre -->
+        <div>
+          <label for="nombre" class="block text-sm font-semibold text-gray-700">Nombre</label>
+          <input type="text" id="nombre" name="nombre" value="{{ $usuario->nombre }}" required
+                 oninput="validarNombreApellido(this)"
                  class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-[#328E6E] focus:outline-none">
-          <p id="mensaje-correo" class="text-sm text-red-600 hidden mt-1"></p>
+          <p id="mensaje-nombre" class="text-sm text-red-600 hidden mt-1"></p>
+        </div>
+
+        <!-- Apellido -->
+        <div>
+          <label for="apellido" class="block text-sm font-semibold text-gray-700">Apellido</label>
+          <input type="text" id="apellido" name="apellido" value="{{ $usuario->apellido }}" required
+                 oninput="validarNombreApellido(this)"
+                 class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-[#328E6E] focus:outline-none">
+          <p id="mensaje-apellido" class="text-sm text-red-600 hidden mt-1"></p>
+        </div>
+
+        <!-- Solo si NO es estudiante -->
+        @php $esEstudiante = session('usuario.tipo') === 'estudiante'; @endphp
+        @if (!$esEstudiante)
+          <div>
+            <label for="correo" class="block text-sm font-semibold text-gray-700">Correo</label>
+            <input type="email" id="correo" name="correo" value="{{ $usuario->correo }}" required
+                   oninput="validarCorreo(this)"
+                   class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-[#328E6E] focus:outline-none">
+            <p id="mensaje-correo" class="text-sm text-red-600 hidden mt-1"></p>
+          </div>
+
+          <div>
+            <label for="cargo" class="block text-sm font-semibold text-gray-700">Cargo</label>
+            <input type="text" id="cargo" name="cargo" value="{{ $usuario->cargo }}" required
+                   class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-[#328E6E] focus:outline-none">
+          </div>
+
+          <div>
+            <label for="institucion" class="block text-sm font-semibold text-gray-700">Institución</label>
+            <input type="text" id="institucion" name="institucion" value="{{ $usuario->institucion }}" required
+                   class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-[#328E6E] focus:outline-none">
+          </div>
+        @endif
+
+        <button type="submit"
+        class="w-full bg-[#328E6E] text-white py-2 rounded-lg hover:bg-[#287256] transition shadow-lg transform hover:scale-[1.02]">
+          Guardar cambios
+        </button>
+      </form>
+    </section>
+
+    <!-- Sección: Cambiar Contraseña -->
+    <section class="space-y-6">
+      <h2 class="text-xl font-semibold text-gray-700 border-b pb-2 mb-4">Cambiar Contraseña</h2>
+      <form action="{{ route('cuenta.actualizar') }}" method="POST" class="space-y-4">
+        @csrf
+
+        <div>
+          <label for="contrasena" class="block text-sm font-semibold text-gray-700">Nueva contraseña</label>
+          <input type="password" id="contrasena" name="contrasena"
+                 oninput="validarContrasena(this)"
+                 class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-[#328E6E] focus:outline-none">
+          <p id="mensaje-contrasena" class="text-sm text-red-600 hidden mt-1"></p>
         </div>
 
         <div>
-          <label for="cargo" class="block text-sm font-semibold text-gray-700">Cargo</label>
-          <input type="text" id="cargo" name="cargo" value="{{ $usuario->cargo }}" required
+          <label for="contrasena_confirmation" class="block text-sm font-semibold text-gray-700">Confirmar contraseña</label>
+          <input type="password" id="contrasena_confirmation" name="contrasena_confirmation"
+                 oninput="validarConfirmacionContrasena()"
                  class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-[#328E6E] focus:outline-none">
+          <p id="mensaje-confirmacion-js" class="text-sm text-red-600 hidden mt-1"></p>
         </div>
 
-        <div>
-          <label for="institucion" class="block text-sm font-semibold text-gray-700">Institución</label>
-          <input type="text" id="institucion" name="institucion" value="{{ $usuario->institucion }}" required
-                 class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-[#328E6E] focus:outline-none">
-        </div>
-      @endif
+        <button type="submit"
+        class="w-full bg-[#328E6E] text-white py-2 rounded-lg hover:bg-[#287256] transition shadow-lg transform hover:scale-[1.02]">
+          Cambiar contraseña
+        </button>
+      </form>
+    </section>
 
-      <div>
-        <label for="contrasena" class="block text-sm font-semibold text-gray-700">Nueva contraseña</label>
-        <input type="password" id="contrasena" name="contrasena"
-               class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-[#328E6E] focus:outline-none">
-        <p id="mensaje-contrasena" class="text-sm text-red-600 mt-1 hidden"></p>
-      </div>
+    <!-- Sección: Eliminar cuenta -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-semibold text-gray-700 border-b pb-2 mb-4">Acciones críticas</h2>
+      <form action="{{ route('cuenta.eliminar') }}" method="POST"
+      onsubmit="return confirm('Esta acción eliminará permanentemente tu cuenta. ¿Estás seguro?');">
+          @csrf
+          @method('DELETE') <!-- Aquí indicamos que realmente es DELETE -->
+          <button type="submit"
+                  class="w-full bg-red-500 text-white font-semibold py-2 px-4 rounded-xl hover:bg-red-700 transition shadow-sm">
+              Eliminar cuenta permanentemente
+          </button>
+      </form>
 
-      <div>
-        <label for="contrasena_confirmation" class="block text-sm font-semibold text-gray-700">Confirmar contraseña</label>
-        <input type="password" id="contrasena_confirmation" name="contrasena_confirmation"
-               class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-[#328E6E] focus:outline-none">
-        <p id="mensaje-confirmacion-js" class="text-sm text-red-600 mt-1 hidden"></p>   
-      </div>
+    </section>
 
-      <button type="submit"
-              class="w-full bg-[#328E6E] text-white font-semibold py-2 px-4 rounded-xl hover:bg-[#287256] transition shadow-sm">
-        Guardar cambios
-      </button>
-    </form>
-
-    <hr class="my-8 border-gray-200">
-
-    <form action="{{ route('cuenta.eliminar') }}" method="POST" onsubmit="return confirm('Esta acción eliminará permanentemente tu cuenta. ¿Estás seguro?');">
-      @csrf
-      <button type="submit"
-              class="w-full bg-red-600 text-white font-semibold py-2 px-4 rounded-xl hover:bg-red-700 transition shadow-sm">
-        Eliminar cuenta permanentemente
-      </button>
-    </form>
   </div>
 
   <script src="{{ asset('js/validacionLoginRegistro.js') }}"></script>
   <script>
-    const tipoUsuario = "{{ session('usuario.tipo') ?? '' }}";
+    // Listeners para validación en tiempo real
+    document.addEventListener('DOMContentLoaded', function () {
+      const tipoUsuario = "{{ session('usuario.tipo') ?? '' }}";
 
-    const correoInput = document.getElementById('correo');
-    if (correoInput && tipoUsuario === 'estudiante') {
-      correoInput.addEventListener('input', () => validarCorreo(correoInput));
-    }
+      const nombre = document.getElementById('nombre');
+      if (nombre) nombre.addEventListener('input', () => validarNombreApellido(nombre));
 
-    const contrasenaInput = document.getElementById('contrasena');
-    const confirmarInput = document.getElementById('contrasena_confirmation');
-    if (contrasenaInput) contrasenaInput.addEventListener('input', () => validarContrasena(contrasenaInput));
-    if (confirmarInput) confirmarInput.addEventListener('input', validarConfirmacionContrasena);
+      const apellido = document.getElementById('apellido');
+      if (apellido) apellido.addEventListener('input', () => validarNombreApellido(apellido));
+
+      const correo = document.getElementById('correo');
+      if (correo) correo.addEventListener('input', () => validarCorreo(correo));
+
+      const contrasena = document.getElementById('contrasena');
+      const confirmar = document.getElementById('contrasena_confirmation');
+      if (contrasena) contrasena.addEventListener('input', () => validarContrasena(contrasena));
+      if (confirmar) confirmar.addEventListener('input', validarConfirmacionContrasena);
+    });
   </script>
 </body>
 </html>

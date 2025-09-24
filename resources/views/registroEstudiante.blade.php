@@ -16,7 +16,7 @@
       <div class="text-center">
         <span id="mensaje-rut" class="text-gray-400 text-sm">Escribe tu rut sin puntos ni guión</span>  
       </div>
-      <form action="/registroEstudiante" method="POST" onsubmit="return validarFormulario();" class="space-y-4">
+      <form action="{{ route('registroEstudiante') }}" method="POST" onsubmit="return validarFormulario();" class="space-y-4">
         @csrf 
       
       <input type="text" id="rut" name="rut" maxlength="10" placeholder="RUT" required
@@ -98,11 +98,11 @@
     </form>
 
     <div class="mt-4 text-center">
-      <a href="/login" class="text-sm text-gray-600 hover:underline">Ya tienes cuenta? Inicia Sesión aquí</a>
+      <a href="{{ route('login') }}" class="text-sm text-gray-600 hover:underline">Ya tienes cuenta? Inicia Sesión aquí</a>
     </div>
 
     <div class="mt-6 flex justify-center">
-      <img src="../img/logo-uda.png" alt="Logo Universidad de Atacama" class="h-12">
+      <img src="{{ asset('img/logo-uda.png') }}" alt="Logo Universidad de Atacama" class="h-12">
     </div>
   </div>
 

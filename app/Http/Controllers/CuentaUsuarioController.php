@@ -36,34 +36,47 @@ class CuentaUsuarioController extends Controller
 
     public function actualizar(Request $request)
     {
-        $usuario = session('usuario');
-        $tipo = $usuario['tipo'];
-        $rut = $usuario['rut'];
-        $tabla = $tipo === 'estudiante' ? 'estudiantes' : 'externos';
-
+        $usuarioSession = session('usuario');
+        $tipo = $usuarioSession['tipo'];
+        $rut = $usuarioSession['rut'];
+    
+        // Obtener modelo correspondiente
+        $usuario = $tipo === 'estudiante' 
+            ? Estudiante::where('rut', $rut)->first() 
+            : Externo::where('rut', $rut)->first();
+    
+        if (!$usuario) {
+            return redirect()->route('login')->with('error', 'Usuario no encontrado.');
+        }
+    
+        // Validación
         $request->validate([
-            'correo' => $tipo === 'externo' ? 'required|email' : '',
+            'nombre' => $tipo === 'externo' ? 'required|string|max:255' : '',
+            'apellido' => $tipo === 'externo' ? 'required|string|max:255' : '',
+            'correo' => $tipo === 'externo' ? 'required|email|max:255' : '',
             'cargo' => $tipo === 'externo' ? 'nullable|string|max:100' : '',
             'institucion' => $tipo === 'externo' ? 'nullable|string|max:100' : '',
-            'contrasena' => 'nullable|min:8|confirmed',
+            'contrasena' => 'nullable|min:8|confirmed|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/',
         ]);
-
-        $datosActualizados = [];
-
+    
+        // Actualizar campos
         if ($tipo === 'externo') {
-            $datosActualizados['correo'] = $request->correo;
-            $datosActualizados['cargo'] = $request->cargo;
-            $datosActualizados['institucion'] = $request->institucion;
+            $usuario->nombre = $request->nombre;
+            $usuario->apellido = $request->apellido;
+            $usuario->correo = $request->correo;
+            $usuario->cargo = $request->cargo;
+            $usuario->institucion = $request->institucion;
         }
-
+    
         if ($request->filled('contrasena')) {
-            $datosActualizados['contrasena'] = Hash::make($request->contrasena);
+            $usuario->contrasena = Hash::make($request->contrasena);
         }
-
-        DB::table($tabla)->where('rut', $rut)->update($datosActualizados);
-
+    
+        $usuario->save();
+    
         return redirect()->route('cuenta.formulario')->with('success', 'Datos actualizados correctamente.');
     }
+    
 
     public function eliminar(Request $request)
     {

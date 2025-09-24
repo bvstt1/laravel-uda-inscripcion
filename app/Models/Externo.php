@@ -9,7 +9,15 @@ class Externo extends Authenticatable
 {
     use HasFactory;
 
-    protected $fillable = ['rut', 'correo', 'institucion', 'cargo', 'contrasena'];
+    protected $fillable = [
+        'nombre',
+        'apellido',
+        'rut',
+        'correo',
+        'institucion',
+        'cargo',
+        'contrasena',
+    ];
 
     public function getAuthPassword()
     {

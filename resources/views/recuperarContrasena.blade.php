@@ -64,7 +64,7 @@
 
 
     <div class="mt-4 text-center">
-      <a href="/login" class="text-sm text-gray-600 hover:underline">← Volver al inicio de sesión</a>
+      <a href="{{ route('login') }}" class="text-sm text-gray-600 hover:underline">← Volver al inicio de sesión</a>
     </div>
   </div>
 </body>

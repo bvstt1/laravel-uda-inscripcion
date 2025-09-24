@@ -16,20 +16,20 @@
 
     <div class="space-y-3">
       <!-- Opción Estudiante -->
-      <a href="/registroEstudiante"
+      <a href="{{ route('registroEstudiante') }}"
         class="block w-full bg-[#328E6E] text-white font-medium text-center py-3 rounded-xl shadow hover:bg-[#287256] transition transform hover:scale-[1.02]">
         Estudiante UDA
       </a>
 
       <!-- Opción Externo -->
-      <a href="/registroExterno"
+      <a href="{{ route('registroExterno') }}"
         class="block w-full bg-gray-200 text-gray-800 font-medium text-center py-3 rounded-xl hover:bg-gray-300 transition transform hover:scale-[1.02]">
         Usuario Externo
       </a>
     </div>
 
     <div class="mt-4 text-center">
-      <a href="./login" class="text-sm text-gray-600 hover:underline">
+      <a href="{{ route('login') }}" class="text-sm text-gray-600 hover:underline">
         ¿Ya tienes cuenta? <span class="text-[#328E6E] font-semibold">Inicia Sesión aquí</span>
       </a>
     </div>

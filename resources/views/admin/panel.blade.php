@@ -11,7 +11,7 @@
     body { font-family: 'Inter', sans-serif; }
   </style>
 </head>
-<body class="bg-gradient-to-br from-gray-100 to-gray-200 min-h-screen flex items-center justify-center text-gray-800">
+<body class="bg-gradient-to-br bg-gray-50 min-h-screen flex items-center justify-center text-gray-800">
   <div class="bg-white rounded-2xl p-8 w-full max-w-md text-center border border-gray-200">
     
     <!-- Logo -->
@@ -45,7 +45,7 @@
     </div>
 
     <!-- Logout -->
-    <a href="/logout" class="inline-block bg-red-600 hover:bg-red-700 text-white text-sm px-5 py-2 rounded-xl transition hover:underline">
+    <a href="{{ route('logout') }}" class="inline-block bg-red-500 hover:bg-red-600 text-white text-sm px-5 py-2 rounded-xl transition">
       Cerrar sesión
     </a>
   </div>
