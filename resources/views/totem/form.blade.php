@@ -6,7 +6,8 @@
     <title>Totem de Asistencia</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/minified/html5-qrcode.min.js"></script>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite('resources/css/app.css')
+    @vite('resources/js/app.js')
     <style>
         .pulse-border {
             box-shadow: 0 0 0 4px #328E6E44;

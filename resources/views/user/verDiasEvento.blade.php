@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Días del Evento Semanal</title>
   <link rel="stylesheet" href="{{ asset('css/ckeditor-content.css') }}">
-  <script src="https://cdn.tailwindcss.com"></script>
+  @vite('resources/css/app.css')
+  @vite('resources/js/app.js')
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
   <style>
     body { font-family: 'Inter', sans-serif; }

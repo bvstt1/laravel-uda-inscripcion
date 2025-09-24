@@ -213,22 +213,32 @@ class EventoController extends Controller
     public function mostrarEventosUsuarios(Request $request)
     {
         $categoriaId = $request->input('categoria_id');
+        $ahora = Carbon::now();
 
+        // Eventos diarios: futuros o que aún no terminaron
         $eventosDiarios = Evento::where('tipo', 'diario')
             ->whereNull('id_evento_padre')
             ->when($categoriaId, fn($query) => $query->where('categoria_id', $categoriaId))
-            ->orderBy('fecha')
-            ->orderBy('hora')
+            ->where(function($query) use ($ahora) {
+                $query->whereDate('fecha', '>', $ahora->toDateString())
+                    ->orWhere(function($q) use ($ahora) {
+                        $q->whereDate('fecha', $ahora->toDateString())
+                            ->whereTime('hora_termino', '>=', $ahora->toTimeString());
+                    });
+            })
+            ->orderBy('fecha', 'asc')
+            ->orderBy('hora', 'asc')
             ->get();
 
+        // Eventos semanales: que aún no terminaron
         $eventosSemanales = Evento::where('tipo', 'semanal')
             ->when($categoriaId, fn($query) => $query->where('categoria_id', $categoriaId))
-            ->orderBy('fecha')
+            ->whereDate('fecha', '>=', $ahora->toDateString()) // inicio >= hoy
+            ->orderBy('fecha', 'asc')
             ->get();
 
         $categorias = Categoria::all();
-        
-        // Supongamos que $user es estudiante o externo
+
         $rut = session('rut');
         $inscripciones = Evento::inscripcionesUsuario($rut);
 
@@ -239,6 +249,7 @@ class EventoController extends Controller
             'inscripciones'
         ));
     }
+
     
     public function verDiasUsuario($id)
     {

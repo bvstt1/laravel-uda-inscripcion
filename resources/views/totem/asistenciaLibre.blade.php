@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Asistencia Libre</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite('resources/css/app.css')
+    @vite('resources/js/app.js')
 </head>
 <body class="bg-gray-100 h-screen flex items-center justify-center">
     <div class="bg-white shadow-xl rounded-lg p-8 w-full max-w-md text-center">

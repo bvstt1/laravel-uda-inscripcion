@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -17,8 +18,17 @@ return new class extends Migration
             $table->string('color')->nullable(); // por ejemplo, '#ff0000'
             $table->string('imagen')->nullable(); // path a imagen o ícono
             $table->timestamps();
-});
+        });
 
+        // Crear categoría predeterminada "Sin categoría"
+        DB::table('categorias')->insert([
+            'id' => 1,
+            'nombre' => 'Sin categoría',
+            'color' => '#CBD5E0',
+            'imagen' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     }
 
     /**
