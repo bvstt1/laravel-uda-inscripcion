@@ -42,9 +42,18 @@
 
     <!-- Flash Message -->
     @if(session('success'))
-      <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-5">
+      <div id="success-message" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-5">
         {{ session('success') }}
       </div>
+      <script>
+        setTimeout(() => {
+          const msg = document.getElementById('success-message');
+          if (msg) {
+            msg.style.opacity = '0';
+            setTimeout(() => msg.remove(), 500);
+          }
+        }, 3000);
+      </script>
     @endif
 
     @if($eventosDiarios->isEmpty())

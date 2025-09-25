@@ -89,6 +89,5 @@ class InscripcionController extends Controller
     
         return back()->with('success', 'No estabas inscrito en este evento.');
     }
-    
 
 }

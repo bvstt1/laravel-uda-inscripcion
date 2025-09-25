@@ -24,9 +24,13 @@
         <p>Gracias,<br>Equipo de la Universidad de Atacama</p>
       </td>
     </tr>
+        {{-- Pie --}}
     <tr>
-      <td style="background-color: #f0f0f0; padding: 15px; text-align: center; font-size: 12px; color: #777;">
-        © {{ date('Y') }} Universidad de Atacama. Todos los derechos reservados.
+      <td style="background-color: #f0f0f0; padding: 20px; text-align: center; font-size: 13px; color: #666;">
+        <strong>Portal de Eventos del HUB</strong><br>
+        Universidad de Atacama<br>
+        <a href="mailto:hub.uda@uda.cl" style="color: #328E6E; text-decoration: none;">correo@uda.cl</a> | 
+        <a href="https://sitio-web.cl" target="_blank" style="color: #328E6E; text-decoration: none;">uda.cl</a>
       </td>
     </tr>
   </table>

@@ -131,14 +131,10 @@ $buscar = request('buscar') ?? '';
 
             <div class="mt-4">
               @if ($estado === 'inscrito')
-                <form method="POST" action="{{ route('desinscribirse', $evento->id) }}"
-                      onsubmit="return confirm('¿Estás seguro que deseas desinscribirte? Una vez desinscrito no podrás volver a inscribirte.')">
-                  @csrf
-                  @method('DELETE')
-                  <button type="submit"
-                          class="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-xl transition">
-                    Desinscribirse
-                  </button>
+                <form method="POST" action="{{ route('desinscribirse', $evento->id) }}" onsubmit="return confirm('¿Estás seguro que deseas desinscribirte?')">
+                  @csrf @method('DELETE')
+                  <p class="text-xs text-red-500 italic mb-2">⚠️ Esta acción es irreversible.</p>
+                  <button type="submit" class="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-xl transition">Desinscribirse</button>
                 </form>
               @elseif ($estado === 'desinscrito')
                 <div class="text-sm text-gray-500 italic mt-2">Ya te desinscribiste.</div>

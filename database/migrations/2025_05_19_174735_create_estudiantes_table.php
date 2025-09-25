@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('estudiantes', function (Blueprint $table) {
             $table->id();
             $table->string('rut')->unique();
+            $table->string('nombre');
+            $table->string('apellido');
             $table->string('correo')->unique();
             $table->string('carrera');
             $table->string('contrasena');

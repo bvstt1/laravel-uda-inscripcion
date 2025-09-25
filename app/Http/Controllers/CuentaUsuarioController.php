@@ -39,44 +39,52 @@ class CuentaUsuarioController extends Controller
         $usuarioSession = session('usuario');
         $tipo = $usuarioSession['tipo'];
         $rut = $usuarioSession['rut'];
-    
+
         // Obtener modelo correspondiente
         $usuario = $tipo === 'estudiante' 
             ? Estudiante::where('rut', $rut)->first() 
             : Externo::where('rut', $rut)->first();
-    
+
         if (!$usuario) {
             return redirect()->route('login')->with('error', 'Usuario no encontrado.');
         }
-    
+
         // Validación
-        $request->validate([
-            'nombre' => $tipo === 'externo' ? 'required|string|max:255' : '',
-            'apellido' => $tipo === 'externo' ? 'required|string|max:255' : '',
-            'correo' => $tipo === 'externo' ? 'required|email|max:255' : '',
-            'cargo' => $tipo === 'externo' ? 'nullable|string|max:100' : '',
-            'institucion' => $tipo === 'externo' ? 'nullable|string|max:100' : '',
+        $rules = [
+            'nombre' => 'required|string|max:255',
+            'apellido' => 'required|string|max:255',
             'contrasena' => 'nullable|min:8|confirmed|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/',
-        ]);
-    
-        // Actualizar campos
+        ];
+
+        // Campos adicionales solo para externos
         if ($tipo === 'externo') {
-            $usuario->nombre = $request->nombre;
-            $usuario->apellido = $request->apellido;
+            $rules['correo'] = 'required|email|max:255|unique:externos,correo,' . $usuario->id;
+            $rules['cargo'] = 'nullable|string|max:100';
+            $rules['institucion'] = 'nullable|string|max:100';
+        }
+
+        $request->validate($rules);
+
+        // Actualizar campos comunes
+        $usuario->nombre = $request->nombre;
+        $usuario->apellido = $request->apellido;
+
+        // Actualizar contraseña si existe
+        if ($request->filled('contrasena')) {
+            $usuario->contrasena = Hash::make($request->contrasena);
+        }
+
+        // Actualizar campos adicionales solo para externos
+        if ($tipo === 'externo') {
             $usuario->correo = $request->correo;
             $usuario->cargo = $request->cargo;
             $usuario->institucion = $request->institucion;
         }
-    
-        if ($request->filled('contrasena')) {
-            $usuario->contrasena = Hash::make($request->contrasena);
-        }
-    
+
         $usuario->save();
-    
+
         return redirect()->route('cuenta.formulario')->with('success', 'Datos actualizados correctamente.');
     }
-    
 
     public function eliminar(Request $request)
     {

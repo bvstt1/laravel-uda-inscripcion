@@ -13,8 +13,6 @@ class RegistroExternoController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nombre' => 'required|string|max:255',
-            'apellido' => 'required|string|max:255',
             'rut' => [
                 'required',
                 'cl_rut',
@@ -29,6 +27,8 @@ class RegistroExternoController extends Controller
                     }
                 },
             ],
+            'nombre' => 'required|string|max:255',
+            'apellido' => 'required|string|max:255',
             'correo' => [
                 'required',
                 'email',
@@ -54,9 +54,9 @@ class RegistroExternoController extends Controller
         $rut_normalizado = \Freshwork\ChileanBundle\Rut::parse($request->rut)->normalize();
 
         $externo = Externo::create([
+            'rut' => $rut_normalizado,
             'nombre' => $request->nombre,
             'apellido' => $request->apellido,
-            'rut' => $rut_normalizado,
             'correo' => $request->correo,
             'institucion' => $request->institucion,
             'cargo' => $request->cargo,
@@ -66,6 +66,6 @@ class RegistroExternoController extends Controller
         Session::put('rut', $externo->rut);
         Session::put('tipo_usuario', 'externo');
 
-        return redirect()->route('login')->with('success', 'Registro completado con éxito.');
+        return redirect()->route('inscripcionEventos')->with('success', 'Registro completado con éxito.');
     }
 }

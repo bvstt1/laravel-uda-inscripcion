@@ -26,6 +26,24 @@
         <p class="text-red-500 text-sm mt-1 transition-opacity duration-300" id="alerta-rut">{{ $message }}</p>
       @enderror
 
+      <!-- NOMBRE -->
+      <input type="text" name="nombre" id="nombre" placeholder="Nombre" required
+        oninput="validarNombreApellido(this, 'mensaje-nombre')"
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#328E6E]">
+      <span id="mensaje-nombre" class="text-red-500 text-sm hidden"></span>
+      @error('nombre')
+        <p class="text-red-500 text-sm mt-1 transition-opacity duration-300">{{ $message }}</p>
+      @enderror
+
+      <!-- APELLIDO -->
+      <input type="text" name="apellido" id="apellido" placeholder="Apellido" required
+        oninput="validarNombreApellido(this, 'mensaje-apellido')"
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#328E6E]">
+      <span id="mensaje-apellido" class="text-red-500 text-sm hidden"></span>
+      @error('apellido')
+        <p class="text-red-500 text-sm transition-opacity duration-300">{{ $message }}</p>
+      @enderror
+
       <input type="email" name="correo" id="correo" placeholder="correo@alumnos.uda.cl" required
         oninput="validarCorreo(this)"
         class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#328E6E]">

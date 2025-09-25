@@ -23,10 +23,7 @@
 <body class="bg-gray-100 h-screen flex items-center justify-center">
 
     <div class="bg-white shadow-xl rounded-lg p-8 w-full max-w-md text-center">
-        
-        <a href="{{ route('totem.selector') }}" class="absolute top-4 right-4 bg-[#328E6E] hover:bg-[#287256] text-white px-4 py-2 rounded transition text-sm">
-            ← Volver
-        </a>
+
         <h1 class="text-2xl font-bold text-[#328E6E] mb-4 mt-6">{{ $evento->titulo }}</h1>
         <p class="text-sm text-gray-600 mb-6">
             <strong>Fecha:</strong> {{ $evento->fecha }}<br>

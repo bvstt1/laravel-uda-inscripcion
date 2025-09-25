@@ -1,3 +1,9 @@
+@php
+use Carbon\Carbon;
+$ahora = Carbon::now();
+$buscar = request('buscar') ?? '';
+@endphp
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,43 +13,56 @@
   @vite('resources/css/app.css')
   @vite('resources/js/app.js')
 </head>
-<body class="bg-white min-h-screen py-12 px-4 font-sans">
+<body class="bg-gray-50 min-h-screen text-gray-800 flex flex-col">
 
-  <div class="max-w-7xl mx-auto">
-    <div class="flex justify-end space-x-3 mb-6">
-        <a href="{{ route('panel') }}"
-        class="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 rounded-md hover:bg-emerald-200 transition">
-            ← Volver al Panel
+  <!-- Header -->
+  <header class="bg-[#007b71] text-gray-100 py-4 shadow-md">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-3">
+      <!-- Título -->
+      <a class="text-2xl md:text-3xl font-bold">Totem de registro de asistencia a Eventos</a>
+      <!-- Botones de cuenta -->
+      <div class="flex gap-3 text-sm">
+        <a href="{{ route('panel') }}" class="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 rounded-md hover:bg-emerald-200 transition">
+          ← Volver al panel</a>
+        <a href="{{ route('logout') }}" class="px-3 py-1 bg-white text-red-600 rounded-lg shadow hover:bg-red-100 transition font-semibold">
+          Cerrar sesión
         </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-7xl mx-auto mt-10 flex-1">
+
+    <div class="max-w-7xl mx-auto px-4">
+
+      <!-- Filtros y búsqueda -->
+      <form method="GET" class="mb-10 flex flex-col md:flex-row items-center justify-end gap-6">
+
+        <!-- Filtro Estado -->
+        <div class="flex flex-col">
+          <label for="estado" class="text-sm font-semibold text-gray-700 mb-1">Estado:</label>
+          <select name="estado" id="estado" onchange="this.form.submit()" class="p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-[#328E6E] focus:border-[#328E6E] transition">
+            <option value="">Todos</option>
+            <option value="activos" {{ request('estado') === 'activos' ? 'selected' : '' }}>Activos</option>
+            <option value="bloqueados" {{ request('estado') === 'bloqueados' ? 'selected' : '' }}>Bloqueados</option>
+          </select>
+        </div>
+
+        <!-- Filtro Categoría -->
+        <div class="flex flex-col">
+          <label for="categoria" class="text-sm font-semibold text-gray-700 mb-1">Categoría:</label>
+          <select name="categoria" id="categoria" onchange="this.form.submit()" class="p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-[#328E6E] focus:border-[#328E6E] transition">
+            <option value="">Todas</option>
+            @foreach($categorias as $cat)
+              <option value="{{ $cat->id }}" {{ request('categoria') == $cat->id ? 'selected' : '' }}>{{ $cat->nombre }}</option>
+            @endforeach
+          </select>
+        </div>
+      </form>
     </div>
 
-    <!-- Título -->
-    <h1 class="text-4xl font-bold text-[#328E6E] mb-10 text-center">🧾 Selecciona un evento para registrar asistencia</h1>
-
-    <!-- Filtros -->
-    <form method="GET" class="mb-10 flex flex-wrap justify-center gap-6">
-      <div>
-        <label for="estado" class="block text-sm font-semibold text-gray-700 mb-1">Estado:</label>
-        <select name="estado" id="estado" onchange="this.form.submit()" class="p-2 border border-gray-300 rounded-lg">
-          <option value="">Todos</option>
-          <option value="activos" {{ request('estado') === 'activos' ? 'selected' : '' }}>Activos</option>
-          <option value="bloqueados" {{ request('estado') === 'bloqueados' ? 'selected' : '' }}>Bloqueados</option>
-        </select>
-      </div>
-
-      <div>
-        <label for="categoria" class="block text-sm font-semibold text-gray-700 mb-1">Categoría:</label>
-        <select name="categoria" id="categoria" onchange="this.form.submit()" class="p-2 border border-gray-300 rounded-lg">
-          <option value="">Todas</option>
-          @foreach($categorias as $cat)
-            <option value="{{ $cat->id }}" {{ request('categoria') == $cat->id ? 'selected' : '' }}>{{ $cat->nombre }}</option>
-          @endforeach
-        </select>
-      </div>
-    </form>
-
     <!-- Eventos Semanales -->
-    <h2 class="text-2xl font-semibold text-[#328E6E] mb-4">📆 Eventos Semanales</h2>
+    <h2 class="text-2xl font-semibold text-[#328E6E] mb-4">Eventos Semanales</h2>
     @forelse($eventosSemanales as $semana)
       <div class="mb-4 border border-gray-300 rounded-lg bg-white">
         <button onclick="toggleSemana({{ $semana->id }})"
@@ -52,32 +71,23 @@
         </button>
 
         <div id="dias-{{ $semana->id }}" class="hidden px-4 py-4 space-y-4">
-          {{-- Aquí permanece tu lógica exacta para mostrar los días de la semana --}}
           @php
             $eventosOrdenados = $semana->dias
               ->filter(function($e) {
                 $estado = request('estado');
                 $categoria = request('categoria');
                 $bloqueado = false;
-
                 if ($e->hora_termino) {
-                  try {
-                    $fechaHoraTermino = \Carbon\Carbon::parse($e->fecha . ' ' . $e->hora_termino);
-                    $bloqueado = \Carbon\Carbon::now()->greaterThanOrEqualTo($fechaHoraTermino->copy()->subMinutes(15));
-                  } catch (\Exception $ex) {
-                    $bloqueado = false;
-                  }
+                  try { $fechaHoraTermino = \Carbon\Carbon::parse($e->fecha . ' ' . $e->hora_termino);
+                        $bloqueado = \Carbon\Carbon::now()->greaterThanOrEqualTo($fechaHoraTermino->copy()->subMinutes(15));
+                  } catch (\Exception $ex) { $bloqueado = false; }
                 }
-
                 if ($estado === 'activos' && $bloqueado) return false;
                 if ($estado === 'bloqueados' && !$bloqueado) return false;
                 if ($categoria && $e->categoria_id != $categoria) return false;
-
                 return true;
               })
-              ->sortBy([
-                fn($a, $b) => strcmp($a->fecha, $b->fecha) ?: strcmp($a->hora, $b->hora)
-              ]);
+              ->sortBy([fn($a, $b) => strcmp($a->fecha, $b->fecha) ?: strcmp($a->hora, $b->hora)]);
           @endphp
 
           @forelse($eventosOrdenados as $evento)
@@ -113,7 +123,7 @@
 
     <!-- Eventos diarios independientes -->
     <hr class="my-10">
-    <h2 class="text-2xl font-semibold text-[#328E6E] mb-4">📌 Eventos Diarios Independientes</h2>
+    <h2 class="text-2xl font-semibold text-[#328E6E] mb-4">Eventos Diarios Independientes</h2>
     @if($eventosDiariosIndependientes->isEmpty())
       <p class="text-gray-500 italic">No hay eventos diarios independientes disponibles.</p>
     @else
@@ -123,25 +133,17 @@
             $estado = request('estado');
             $categoria = request('categoria');
             $bloqueado = false;
-
             if ($e->hora_termino) {
-              try {
-                $fechaHoraTermino = \Carbon\Carbon::parse($e->fecha . ' ' . $e->hora_termino);
-                $bloqueado = \Carbon\Carbon::now()->greaterThanOrEqualTo($fechaHoraTermino->copy()->subMinutes(15));
-              } catch (\Exception $ex) {
-                $bloqueado = false;
-              }
+              try { $fechaHoraTermino = \Carbon\Carbon::parse($e->fecha . ' ' . $e->hora_termino);
+                    $bloqueado = \Carbon\Carbon::now()->greaterThanOrEqualTo($fechaHoraTermino->copy()->subMinutes(15));
+              } catch (\Exception $ex) { $bloqueado = false; }
             }
-
             if ($estado === 'activos' && $bloqueado) return false;
             if ($estado === 'bloqueados' && !$bloqueado) return false;
             if ($categoria && $e->categoria_id != $categoria) return false;
-
             return true;
           })
-          ->sortBy([
-            fn($a, $b) => strcmp($a->fecha, $b->fecha) ?: strcmp($a->hora, $b->hora)
-          ]);
+          ->sortBy([fn($a, $b) => strcmp($a->fecha, $b->fecha) ?: strcmp($a->hora, $b->hora)]);
       @endphp
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -151,9 +153,8 @@
             $nombreCategoria = $evento->categoria->nombre ?? 'Sin categoría';
             $bloqueado = false;
             if ($evento->hora_termino) {
-              try {
-                $fechaHoraTermino = \Carbon\Carbon::parse($evento->fecha . ' ' . $evento->hora_termino);
-                $bloqueado = \Carbon\Carbon::now()->greaterThanOrEqualTo($fechaHoraTermino->copy()->subMinutes(15));
+              try { $fechaHoraTermino = \Carbon\Carbon::parse($evento->fecha . ' ' . $evento->hora_termino);
+                    $bloqueado = \Carbon\Carbon::now()->greaterThanOrEqualTo($fechaHoraTermino->copy()->subMinutes(15));
               } catch (\Exception $e) {}
             }
           @endphp
@@ -181,6 +182,36 @@
     @endif
   </div>
 
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-gray-300 py-10 mt-16">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+      <!-- Redes sociales -->
+      <div class="flex items-center space-x-4">
+        <a href="https://www.facebook.com/UDAinstitucional" target="_blank" class="hover:text-white transition">
+          <i class="fa-brands fa-square-facebook text-2xl"></i>
+        </a>
+        <a href="https://x.com/UAtacama" target="_blank" class="hover:text-white transition">
+          <i class="fa-brands fa-twitter text-2xl"></i>
+        </a>
+        <a href="https://www.instagram.com/u_atacama/" target="_blank" class="hover:text-white transition">
+          <i class="fa-brands fa-instagram text-2xl"></i>
+        </a>
+        <a href="https://www.linkedin.com/company/uda-universidad-de-atacama/" target="_blank" class="hover:text-white transition">
+          <i class="fa-brands fa-linkedin text-2xl"></i>
+        </a>
+        <a href="https://www.youtube.com/c/UDATelevisi%C3%B3n" target="_blank" class="hover:text-white transition">
+          <i class="fa-brands fa-youtube text-2xl"></i>
+        </a>
+      </div>
+      <!-- Crédito -->
+      <div class="text-sm text-gray-400 text-center md:text-right">
+        &copy; {{ date('Y') }} Universidad de Atacama.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://kit.fontawesome.com/782e1f1389.js" crossorigin="anonymous"></script>
   <script>
     function toggleSemana(id) {
       const content = document.getElementById('dias-' + id);
@@ -189,5 +220,6 @@
       }
     }
   </script>
+
 </body>
 </html>

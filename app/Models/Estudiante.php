@@ -9,7 +9,8 @@ class Estudiante extends Authenticatable
 {
     use HasFactory;
 
-    protected $fillable = ['rut', 'correo', 'carrera', 'contrasena'];
+    protected $fillable = ['rut', 'nombre', 'apellido',
+        'rut','correo', 'carrera', 'contrasena'];
 
     public function getAuthPassword()
     {

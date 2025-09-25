@@ -25,7 +25,7 @@ $buscar = request('buscar') ?? '';
       <div class="flex gap-3 text-sm">
         <a href="{{ route('panel') }}" class="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 rounded-md hover:bg-emerald-200 transition">
           ← Volver al panel</a>
-        <a href="/logout" class="px-3 py-1 bg-white text-red-600 rounded-lg shadow hover:bg-red-100 transition font-semibold">
+        <a href="{{ route('logout') }}" class="px-3 py-1 bg-white text-red-600 rounded-lg shadow hover:bg-red-100 transition font-semibold">
           Cerrar sesión
         </a>
       </div>
@@ -49,7 +49,7 @@ $buscar = request('buscar') ?? '';
   <main class="flex-1 max-w-7xl mx-auto py-10 px-6">
 
     <!-- Filtros y crear evento -->
-    <div class="bg-[#007b71] mb-10 p-6 rounded-2xl shadow-lg flex flex-wrap  items-center text-white">
+    <div class="bg-[#007b71] mb-10 p-6 rounded-2xl shadow-lg flex flex-col md:flex-row items-start md:items-center gap-6 text-white">
 
       <!-- Botón crear evento -->
       <a href="{{ route('eventos.create') }}" 
@@ -58,28 +58,28 @@ $buscar = request('buscar') ?? '';
       </a>
 
       <!-- Formulario de filtros -->
-      <form method="GET" class="flex flex-wrap gap-4 items-center flex-1 justify-end">
+      <form method="GET" class="flex flex-col md:flex-row gap-4 flex-1 md:justify-end">
 
-        <!-- Barra de búsqueda por título -->
+        <!-- Barra de búsqueda -->
         <div class="flex flex-col">
-          <label class="text-sm font-semibold text-white mb-1">Buscar por título:</label>
+          <label class="text-sm font-semibold mb-1">Buscar por título:</label>
           <input 
             type="text" 
             name="buscar" 
             value="{{ $buscar }}" 
             placeholder="Ingrese el título" 
-            class="p-2 rounded-lg border-2 border-gray-300 bg-white text-gray-800 shadow-sm 
-                  focus:outline-none transition"
+            class="p-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm 
+                  focus:ring-2 focus:ring-[#328E6E] focus:border-[#328E6E] transition w-64"
             onkeyup="this.form.submit()"
           >
         </div>
 
         <!-- Filtro por categoría -->
         <div class="flex flex-col">
-          <label class="text-sm font-semibold text-white mb-1">Categoría:</label>
+          <label class="text-sm font-semibold mb-1">Categoría:</label>
           <select name="categoria_id" onchange="this.form.submit()" 
-                  class="p-2 rounded-lg border-2 border-gray-300 bg-white text-gray-800 shadow-sm 
-                        cursor-pointer">
+                  class="p-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm 
+                        cursor-pointer focus:ring-2 focus:ring-[#328E6E] focus:border-[#328E6E] transition">
             <option value="">Todas</option>
             @foreach($categorias as $cat)
               <option value="{{ $cat->id }}" {{ request('categoria_id') == $cat->id ? 'selected' : '' }}>{{ $cat->nombre }}</option>
@@ -89,17 +89,19 @@ $buscar = request('buscar') ?? '';
 
         <!-- Filtro por estado -->
         <div class="flex flex-col">
-          <label class="text-sm font-semibold text-white mb-1">Estado:</label>
+          <label class="text-sm font-semibold mb-1">Estado:</label>
           <select name="estado" onchange="this.form.submit()" 
-                  class="p-2 rounded-lg border-2 border-gray-300 bg-white text-gray-800 shadow-sm 
-                        cursor-pointer">
+                  class="p-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm 
+                        cursor-pointer focus:ring-2 focus:ring-[#328E6E] focus:border-[#328E6E] transition">
             <option value="">Todos</option>
             <option value="activos" {{ request('estado') === 'activos' ? 'selected' : '' }}>Activos</option>
             <option value="terminados" {{ request('estado') === 'terminados' ? 'selected' : '' }}>Terminados</option>
           </select>
         </div>
+
       </form>
     </div>
+
 
 
     <!-- Función para filtrar eventos -->

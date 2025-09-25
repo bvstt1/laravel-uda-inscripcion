@@ -24,11 +24,17 @@
     </div>
 
     <!-- Mensajes -->
-    @if (session('success'))
-      <div class="bg-green-100 border border-green-300 text-green-700 rounded-lg px-4 py-3">
-        {{ session('success') }}
-      </div>
-    @endif
+  @if(session('success'))
+    <div id="success-message" class="mb-6 p-4 bg-green-100 text-green-800 rounded-md border border-green-300 transition-opacity duration-500">
+      {{ session('success') }}
+    </div>
+    <script>
+      setTimeout(() => {
+        const msg = document.getElementById('success-message');
+        if (msg) { msg.style.opacity = '0'; setTimeout(() => msg.remove(), 300); }
+      }, 3000);
+    </script>
+  @endif
 
     @if ($errors->any())
       <div class="bg-red-100 border border-red-300 text-red-700 rounded-lg px-4 py-3">
@@ -42,37 +48,36 @@
 
     <!-- Sección: Datos Personales -->
     <section class="space-y-6">
-      <h2 class="text-xl font-semibold text-gray-700 border-b pb-2 mb-4">Ver Datos Personales</h2>
+      <h2 class="text-xl font-semibold text-gray-700 border-b pb-2 mb-4">Ver y editar Datos Personales</h2>
       <form action="{{ route('cuenta.actualizar') }}" method="POST" class="space-y-4">
         @csrf
 
-        <!-- RUT (solo lectura) -->
-        <div>
-          <label for="rut" class="block text-sm font-semibold text-gray-700">RUT</label>
-          <input type="text" id="rut" name="rut" value="{{ number_format(substr($usuario->rut, 0, -1), 0, '', '.') . '-' . substr($usuario->rut, -1) }}" readonly
-                class="w-full border border-gray-300 rounded-xl px-4 py-2 bg-gray-100 text-gray-500 cursor-not-allowed">
-        </div>
-
-        <!-- Correo (solo lectura) -->
-        <div class="mt-4">
-          <label for="correo" class="block text-sm font-semibold text-gray-700">Correo</label>
-          <input type="email" id="correo" name="correo" value="{{ $usuario->correo ?? $usuario->email }}" readonly
-                class="w-full border border-gray-300 rounded-xl px-4 py-2 bg-gray-100 text-gray-500 cursor-not-allowed">
-        </div>
-
         <!-- Nombre -->
+        <div>
+          <label for="nombre" class="block text-sm font-semibold text-gray-700">Nombre</label>
+          <input type="text" id="nombre" name="nombre" value="{{ $usuario->nombre }}" required
+                 class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-[#328E6E] focus:outline-none">
+        </div>
 
-        <!-- Solo si NO es estudiante -->
-        @php $esEstudiante = session('usuario.tipo') === 'estudiante'; @endphp
-        @if (!$esEstudiante)
-          <div>
-            <label for="correo" class="block text-sm font-semibold text-gray-700">Correo</label>
-            <input type="email" id="correo" name="correo" value="{{ $usuario->correo }}" required
-                   oninput="validarCorreo(this)"
-                   class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-[#328E6E] focus:outline-none">
-            <p id="mensaje-correo" class="text-sm text-red-600 hidden mt-1"></p>
-          </div>
+        <!-- Apellido -->
+        <div>
+          <label for="apellido" class="block text-sm font-semibold text-gray-700">Apellido</label>
+          <input type="text" id="apellido" name="apellido" value="{{ $usuario->apellido }}" required
+                 class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-[#328E6E] focus:outline-none">
+        </div>
 
+        <!-- Correo editable -->
+        <div>
+          <label for="correo" class="block text-sm font-semibold text-gray-700">Correo</label>
+          <input type="email" id="correo" name="correo" value="{{ $usuario->correo ?? $usuario->email }}" required
+                 oninput="validarCorreo(this)"
+                 class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-[#328E6E] focus:outline-none"
+                 placeholder="tu_correo@alumnos.uda.cl">
+          <p id="mensaje-correo" class="text-sm text-red-600 hidden mt-1">El correo debe ser @alumnos.uda.cl</p>
+        </div>
+
+        <!-- Solo para externos: Cargo -->
+        @if(session('usuario.tipo') !== 'estudiante')
           <div>
             <label for="cargo" class="block text-sm font-semibold text-gray-700">Cargo</label>
             <input type="text" id="cargo" name="cargo" value="{{ $usuario->cargo }}" required
@@ -86,13 +91,11 @@
           </div>
         @endif
 
-        <!-- Solo mostrar botón Guardar cambios si NO es estudiante -->
-        @if (!$esEstudiante)
-          <button type="submit"
-              class="w-full bg-[#328E6E] text-white py-2 rounded-lg hover:bg-[#287256] transition shadow-lg transform hover:scale-[1.02]">
-            Guardar cambios
-          </button>
-        @endif
+        <!-- Botón Guardar cambios -->
+        <button type="submit"
+                class="w-full bg-[#328E6E] text-white py-2 rounded-lg hover:bg-[#287256] transition shadow-lg transform hover:scale-[1.02]">
+          Guardar cambios
+        </button>
       </form>
     </section>
 
@@ -131,37 +134,16 @@
       <form action="{{ route('cuenta.eliminar') }}" method="POST"
       onsubmit="return confirm('Esta acción eliminará permanentemente tu cuenta. ¿Estás seguro?');">
           @csrf
-          @method('DELETE') <!-- Aquí indicamos que realmente es DELETE -->
+          @method('DELETE')
           <button type="submit"
                   class="w-full bg-red-500 text-white font-semibold py-2 px-4 rounded-xl hover:bg-red-700 transition shadow-sm">
               Eliminar cuenta permanentemente
           </button>
       </form>
-
     </section>
 
   </div>
 
   <script src="{{ asset('js/validacionLoginRegistro.js') }}"></script>
-  <script>
-    // Listeners para validación en tiempo real
-    document.addEventListener('DOMContentLoaded', function () {
-      const tipoUsuario = "{{ session('usuario.tipo') ?? '' }}";
-
-      const nombre = document.getElementById('nombre');
-      if (nombre) nombre.addEventListener('input', () => validarNombreApellido(nombre));
-
-      const apellido = document.getElementById('apellido');
-      if (apellido) apellido.addEventListener('input', () => validarNombreApellido(apellido));
-
-      const correo = document.getElementById('correo');
-      if (correo) correo.addEventListener('input', () => validarCorreo(correo));
-
-      const contrasena = document.getElementById('contrasena');
-      const confirmar = document.getElementById('contrasena_confirmation');
-      if (contrasena) contrasena.addEventListener('input', () => validarContrasena(contrasena));
-      if (confirmar) confirmar.addEventListener('input', validarConfirmacionContrasena);
-    });
-  </script>
 </body>
 </html>
