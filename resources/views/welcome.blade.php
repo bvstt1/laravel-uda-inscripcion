@@ -11,18 +11,20 @@
 </head>
 <body class="bg-gray-50 flex items-center justify-center min-h-screen px-4">
   <div class="max-w-4xl w-full bg-white rounded-2xl shadow-xl overflow-hidden">
+
     <!-- Encabezado -->
-    <div class="bg-gradient-to-r from-[#328E6E] to-[#1B4332] p-8 text-center text-white">
-      <h1 class="text-4xl font-bold mb-2">Bienvenido al Registro de Eventos del HUB</h1>
+    <div class="bg-[#328E6E] p-8 text-center text-white">
+      <h1 class="text-4xl font-bold mb-2">Portal de Eventos del HUB</h1>
       <p class="text-sm opacity-90">Universidad de Atacama</p>
     </div>
 
     <!-- Contenido -->
     <div class="p-8 grid md:grid-cols-2 gap-8">
       <div class="flex flex-col justify-center">
-        <h2 class="text-2xl font-semibold text-[#2D6A4F] mb-3">Explora y participa</h2>
+        <h2 class="text-2xl font-semibold text-[#2D6A4F] mb-3">Descubre y participa</h2>
         <p class="text-gray-600 mb-6">
-          Este es el portal oficial donde podrás <span class="font-medium">inscribirte en charlas, talleres, seminarios y actividades</span> organizadas pora el HUB de innovación.
+          Accede a <span class="font-medium">charlas, talleres, seminarios y actividades</span> que el HUB de Innovación pone a disposición. 
+          Una vez dentro, encontrarás la sección de <span class="font-semibold text-[#328E6E]">Eventos Disponibles</span> organizada en categorías diarias y semanales.
         </p>
         <div class="flex flex-col gap-3">
           <a href="{{ route('login') }}"
@@ -44,7 +46,7 @@
 
     <!-- Footer -->
     <div class="bg-gray-100 text-center py-4 text-sm text-gray-500">
-      © {{ date('Y') }} Universidad de Atacama - Sistema de Eventos
+      © {{ date('Y') }} Universidad de Atacama
     </div>
   </div>
 </body>

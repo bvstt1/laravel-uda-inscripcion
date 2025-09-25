@@ -20,14 +20,13 @@ use App\Http\Controllers\HomeController;
 // =======================
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('welcome');
 
 // =======================
 // AUTENTICACIÓN
 // =======================
 Route::view('/login', 'login')->name('login');
 Route::post('/login', [LoginController::class, 'login']);
-Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // =======================

@@ -1,6 +1,7 @@
 @php
 use Carbon\Carbon;
 $ahora = Carbon::now();
+$buscar = request('buscar') ?? '';
 @endphp
 
 <!DOCTYPE html>
@@ -18,209 +19,232 @@ $ahora = Carbon::now();
   <!-- Header -->
   <header class="bg-[#007b71] text-gray-100 py-4 shadow-md">
     <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-3">
-      
       <!-- Título -->
-      <a class="text-2xl md:text-3xl font-bold">Panel de Administración de Eventos</h1>
-      
+      <a class="text-2xl md:text-3xl font-bold">Panel de Administración de Eventos</a>
       <!-- Botones de cuenta -->
       <div class="flex gap-3 text-sm">
         <a href="{{ route('panel') }}" class="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 rounded-md hover:bg-emerald-200 transition">
           ← Volver al panel</a>
-        <a href="/logout" 
-          class="px-3 py-1 bg-white text-red-600 rounded-lg shadow hover:bg-red-100 transition font-semibold">
+        <a href="/logout" class="px-3 py-1 bg-white text-red-600 rounded-lg shadow hover:bg-red-100 transition font-semibold">
           Cerrar sesión
         </a>
       </div>
-
     </div>
   </header>
 
-    <!-- Mensaje éxito -->
-    @if(session('success'))
-      <div id="success-message" class="mb-6 p-4 bg-green-100 text-green-800 rounded-md border border-green-300 transition-opacity duration-500">
-        {{ session('success') }}
-      </div>
-      <script>
-        setTimeout(() => {
-          const msg = document.getElementById('success-message');
-          if (msg) { msg.style.opacity = '0'; setTimeout(() => msg.remove(), 500); }
-        }, 3000);
-      </script>
-    @endif
+  <!-- Mensaje éxito -->
+  @if(session('success'))
+    <div id="success-message" class="mb-6 p-4 bg-green-100 text-green-800 rounded-md border border-green-300 transition-opacity duration-500">
+      {{ session('success') }}
+    </div>
+    <script>
+      setTimeout(() => {
+        const msg = document.getElementById('success-message');
+        if (msg) { msg.style.opacity = '0'; setTimeout(() => msg.remove(), 500); }
+      }, 3000);
+    </script>
+  @endif
 
-    <!-- Contenido principal -->
-    <main class="flex-1 max-w-7xl mx-auto py-10 px-6">
-      <!-- Filtros y crear evento -->
-      <div class="mb-10 flex flex-wrap gap-4 items-center">
-        <a href="{{ route('eventos.create') }}" class="bg-[#328E6E] hover:bg-[#287256] text-white py-2 px-6 rounded-lg shadow-md transition">+ Crear nuevo evento</a>
+  <!-- Contenido principal -->
+  <main class="flex-1 max-w-7xl mx-auto py-10 px-6">
 
-        <form method="GET" class="flex flex-wrap gap-4 items-center">
-          <div>
-            <label class="text-sm font-medium text-gray-700">Categoría:</label>
-            <select name="categoria_id" onchange="this.form.submit()" class="p-2 border rounded-lg">
-              <option value="">Todas</option>
-              @foreach($categorias as $cat)
-                <option value="{{ $cat->id }}" {{ request('categoria_id') == $cat->id ? 'selected' : '' }}>{{ $cat->nombre }}</option>
-              @endforeach
-            </select>
-          </div>
-          <div>
-            <label class="text-sm font-medium text-gray-700">Estado:</label>
-            <select name="estado" onchange="this.form.submit()" class="p-2 border rounded-lg">
-              <option value="">Todos</option>
-              <option value="activos" {{ request('estado') === 'activos' ? 'selected' : '' }}>Activos</option>
-              <option value="terminados" {{ request('estado') === 'terminados' ? 'selected' : '' }}>Terminados</option>
-            </select>
-          </div>
-        </form>
-      </div>
+    <!-- Filtros y crear evento -->
+    <div class="bg-[#007b71] mb-10 p-6 rounded-2xl shadow-lg flex flex-wrap  items-center text-white">
 
-      <!-- Función para filtrar eventos -->
-      @php
-        function filtrarEventos($eventos, $ahora) {
-          $categoriaFiltro = request('categoria_id');
-          $estadoFiltro = request('estado');
+      <!-- Botón crear evento -->
+      <a href="{{ route('eventos.create') }}" 
+        class="bg-white text-[#328E6E] font-semibold px-5 py-2 rounded-xl shadow hover:bg-gray-100 transition">
+        + Crear nuevo evento
+      </a>
 
-          return $eventos->filter(function($e) use ($ahora, $categoriaFiltro, $estadoFiltro) {
-            $fechaEvento = Carbon::parse($e->fecha . ' ' . ($e->hora_termino ?? $e->hora));
+      <!-- Formulario de filtros -->
+      <form method="GET" class="flex flex-wrap gap-4 items-center flex-1 justify-end">
 
-            if($estadoFiltro === 'activos' && $fechaEvento->lessThanOrEqualTo($ahora)) return false;
-            if($estadoFiltro === 'terminados' && $fechaEvento->greaterThan($ahora)) return false;
-
-            if($categoriaFiltro === 'none' && !empty($e->categoria_id)) return false;
-            if(is_numeric($categoriaFiltro) && $e->categoria_id != $categoriaFiltro) return false;
-
-            return true;
-          });
-        }
-
-        $eventosDiariosFiltrados = filtrarEventos($eventosDiarios->sortBy('fecha')->sortBy('hora'), $ahora);
-        $eventosSemanalesFiltrados = filtrarEventos($eventosSemanales->sortBy('fecha'), $ahora);
-      @endphp
-
-      <!-- Eventos Diarios -->
-      <section class="mb-16">
-        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Eventos Diarios</h2>
-        <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          @forelse($eventosDiariosFiltrados as $evento)
-            @php
-              $color = $evento->categoria->color ?? '#CBD5E0';
-              $nombreCategoria = $evento->categoria->nombre ?? 'Sin categoría';
-            @endphp
-            <div class="bg-white border-l-8 rounded-xl shadow-md hover:shadow-lg p-6 border border-gray-100 transition relative" style="border-color: {{ $color }}">
-              <h3 class="text-lg font-semibold text-[#328E6E]">{{ $evento->titulo }}</h3>
-              <p class="text-xs font-semibold text-gray-500 mt-1">Categoría: {{ $nombreCategoria }}</p>
-              <p class="text-sm text-gray-700 mt-1"><strong>Fecha:</strong> {{ $evento->fecha }}</p>
-              <p class="text-sm text-gray-700"><strong>Horario:</strong> {{ Carbon::parse($evento->hora)->format('H:i') }} @if($evento->hora_termino) - {{ Carbon::parse($evento->hora_termino)->format('H:i') }} @endif</p>
-              <p class="text-sm text-gray-700"><strong>Lugar:</strong> {{ $evento->lugar }}</p>
-              <div class="mt-4 flex gap-2">
-                <a href="{{ route('eventos.edit', $evento->id) }}" class="text-sm bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded-lg">Editar</a>
-                <form action="{{ route('eventos.destroy', $evento->id) }}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar este evento?')">
-                  @csrf @method('DELETE')
-                  <button type="submit" class="text-sm bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded-lg">Eliminar</button>
-                </form>
-                <button class="ver-mas-btn text-sm text-emerald-600 hover:underline ml-auto" data-id="{{ $evento->id }}">Ver más</button>
-              </div>
-            </div>
-
-            <!-- Modal evento diario -->
-            <div id="modal-{{ $evento->id }}" class="fixed inset-0 hidden justify-center items-center z-50">
-              <div class="absolute inset-0  backdrop-blur-sm" data-modal-close></div>
-              <div class="relative bg-white rounded-lg max-w-xl w-full p-6 shadow-xl overflow-y-auto max-h-[90vh]">
-                <h2 class="text-2xl font-bold text-[#328E6E] mb-4">{{ $evento->titulo }}</h2>
-                <p class="text-sm text-gray-600 mb-1"><strong>Fecha:</strong> {{ $evento->fecha }}</p>
-                <p class="text-sm text-gray-600 mb-1"><strong>Horario:</strong> {{ Carbon::parse($evento->hora)->format('H:i') }} @if($evento->hora_termino) - {{ Carbon::parse($evento->hora_termino)->format('H:i') }} @endif</p>
-                <p class="text-sm text-gray-600 mb-4"><strong>Lugar:</strong> {{ $evento->lugar }}</p>
-                <div class="prose prose-sm max-w-none text-gray-700">{!! $evento->descripcion_html ?? $evento->descripcion !!}</div>
-                <button class="cerrar-modal-btn absolute top-2 right-4 text-gray-500 hover:text-gray-700 text-xl" data-modal-close>&times;</button>
-              </div>
-            </div>
-          @empty
-            <p class="text-gray-500 italic">No hay eventos diarios que coincidan con los filtros seleccionados.</p>
-          @endforelse
+        <!-- Barra de búsqueda por título -->
+        <div class="flex flex-col">
+          <label class="text-sm font-semibold text-white mb-1">Buscar por título:</label>
+          <input 
+            type="text" 
+            name="buscar" 
+            value="{{ $buscar }}" 
+            placeholder="Ingrese el título" 
+            class="p-2 rounded-lg border-2 border-gray-300 bg-white text-gray-800 shadow-sm 
+                  focus:outline-none transition"
+            onkeyup="this.form.submit()"
+          >
         </div>
-      </section>
 
-      <!-- Eventos Semanales -->
-      <section>
-        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Eventos Semanales</h2>
-        <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          @forelse($eventosSemanalesFiltrados as $evento)
-            @php
-              $color = $evento->categoria->color ?? '#CBD5E0';
-              $nombreCategoria = $evento->categoria->nombre ?? 'Sin categoría';
-              $inicioSemana = Carbon::parse($evento->fecha)->startOfWeek();
-              $finSemana = Carbon::parse($evento->fecha)->endOfWeek();
-            @endphp
-            <div class="bg-white border-l-8 rounded-xl shadow-md hover:shadow-lg p-6 border border-gray-100 transition relative" style="border-color: {{ $color }}">
-              <h3 class="text-lg font-semibold text-[#328E6E]">{{ $evento->titulo }}</h3>
-              <p class="text-xs font-semibold text-gray-500 mt-1">Categoría: {{ $nombreCategoria }}</p>
-              <p class="text-sm text-gray-700 mt-1"><strong>Semana:</strong> {{ $inicioSemana->format('Y-m-d') }} al {{ $finSemana->format('Y-m-d') }}</p>
-              <p class="text-sm text-gray-700"><strong>Lugar:</strong> {{ $evento->lugar }}</p>
-              <div class="mt-4 flex gap-2">
-                <a href="{{ route('eventos.edit', $evento->id) }}" class="text-sm bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded-lg">Editar</a>
-                <a href="{{ route('eventos.semanal.dias', $evento->id) }}" class="text-sm bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-1 rounded-lg">Ver días</a>
-                <form action="{{ route('eventos.destroy', $evento->id) }}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar este evento?')">
-                  @csrf @method('DELETE')
-                  <button type="submit" class="text-sm bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded-lg">Eliminar</button>
-                </form>
-                <button class="ver-mas-btn text-sm text-emerald-600 hover:underline ml-auto" data-id="{{ $evento->id }}">Ver más</button>
-              </div>
-            </div>
-
-            <!-- Modal evento semanal -->
-            <div id="modal-{{ $evento->id }}" class="fixed inset-0 hidden justify-center items-center z-50">
-              <div class="absolute inset-0 bg-black bg-opacity-50" data-modal-close></div>
-              <div class="relative bg-white rounded-lg max-w-xl w-full p-6 shadow-xl overflow-y-auto max-h-[90vh]">
-                <h2 class="text-2xl font-bold text-[#328E6E] mb-4">{{ $evento->titulo }}</h2>
-                <p class="text-sm text-gray-600 mb-1"><strong>Semana:</strong> {{ $inicioSemana->format('Y-m-d') }} al {{ $finSemana->format('Y-m-d') }}</p>
-                <p class="text-sm text-gray-600 mb-4"><strong>Lugar:</strong> {{ $evento->lugar }}</p>
-                <div class="prose prose-sm max-w-none text-gray-700">{!! $evento->descripcion_html ?? $evento->descripcion !!}</div>
-                <button class="cerrar-modal-btn absolute top-2 right-4 text-gray-500 hover:text-gray-700 text-xl" data-modal-close>&times;</button>
-              </div>
-            </div>
-          @empty
-            <p class="text-gray-500 italic">No hay eventos semanales que coincidan con los filtros seleccionados.</p>
-          @endforelse
+        <!-- Filtro por categoría -->
+        <div class="flex flex-col">
+          <label class="text-sm font-semibold text-white mb-1">Categoría:</label>
+          <select name="categoria_id" onchange="this.form.submit()" 
+                  class="p-2 rounded-lg border-2 border-gray-300 bg-white text-gray-800 shadow-sm 
+                        cursor-pointer">
+            <option value="">Todas</option>
+            @foreach($categorias as $cat)
+              <option value="{{ $cat->id }}" {{ request('categoria_id') == $cat->id ? 'selected' : '' }}>{{ $cat->nombre }}</option>
+            @endforeach
+          </select>
         </div>
-      </section>
-    </main>
 
-  </div>
+        <!-- Filtro por estado -->
+        <div class="flex flex-col">
+          <label class="text-sm font-semibold text-white mb-1">Estado:</label>
+          <select name="estado" onchange="this.form.submit()" 
+                  class="p-2 rounded-lg border-2 border-gray-300 bg-white text-gray-800 shadow-sm 
+                        cursor-pointer">
+            <option value="">Todos</option>
+            <option value="activos" {{ request('estado') === 'activos' ? 'selected' : '' }}>Activos</option>
+            <option value="terminados" {{ request('estado') === 'terminados' ? 'selected' : '' }}>Terminados</option>
+          </select>
+        </div>
+      </form>
+    </div>
+
+
+    <!-- Función para filtrar eventos -->
+    @php
+      function filtrarEventos($eventos, $ahora, $buscar) {
+        $categoriaFiltro = request('categoria_id');
+        $estadoFiltro = request('estado');
+
+        return $eventos->filter(function($e) use ($ahora, $categoriaFiltro, $estadoFiltro, $buscar) {
+          $fechaEvento = Carbon::parse($e->fecha . ' ' . ($e->hora_termino ?? $e->hora));
+
+          if($estadoFiltro === 'activos' && $fechaEvento->lessThanOrEqualTo($ahora)) return false;
+          if($estadoFiltro === 'terminados' && $fechaEvento->greaterThan($ahora)) return false;
+
+          if($categoriaFiltro === 'none' && !empty($e->categoria_id)) return false;
+          if(is_numeric($categoriaFiltro) && $e->categoria_id != $categoriaFiltro) return false;
+
+          if($buscar && stripos($e->titulo, $buscar) === false) return false;
+
+          return true;
+        });
+      }
+
+      $eventosDiariosFiltrados = filtrarEventos($eventosDiarios->sortBy('fecha')->sortBy('hora'), $ahora, $buscar);
+      $eventosSemanalesFiltrados = filtrarEventos($eventosSemanales->sortBy('fecha'), $ahora, $buscar);
+    @endphp
+
+    <!-- Eventos Diarios -->
+    <section class="mb-16">
+      <h2 class="text-2xl font-semibold text-gray-800 mb-4">Eventos Diarios</h2>
+      <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @forelse($eventosDiariosFiltrados as $evento)
+          @php
+            $color = $evento->categoria->color ?? '#CBD5E0';
+            $nombreCategoria = $evento->categoria->nombre ?? 'Sin categoría';
+          @endphp
+          <div class="bg-white border-l-8 rounded-xl shadow-md hover:shadow-lg p-6 border border-gray-100 transition relative" style="border-color: {{ $color }}">
+            <h3 class="text-lg font-semibold text-[#328E6E]">{{ $evento->titulo }}</h3>
+            <p class="text-xs font-semibold text-gray-500 mt-1">Categoría: {{ $nombreCategoria }}</p>
+            <p class="text-sm text-gray-700 mt-1"><strong>Fecha:</strong> {{ $evento->fecha }}</p>
+            <p class="text-sm text-gray-700"><strong>Horario:</strong> {{ Carbon::parse($evento->hora)->format('H:i') }} @if($evento->hora_termino) - {{ Carbon::parse($evento->hora_termino)->format('H:i') }} @endif</p>
+            <p class="text-sm text-gray-700"><strong>Lugar:</strong> {{ $evento->lugar }}</p>
+            <div class="mt-4 flex gap-2">
+              <a href="{{ route('eventos.edit', $evento->id) }}" class="text-sm bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded-lg">Editar</a>
+              <form action="{{ route('eventos.destroy', $evento->id) }}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar este evento?')">
+                @csrf @method('DELETE')
+                <button type="submit" class="text-sm bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded-lg cursor-pointer">Eliminar</button>
+              </form>
+              <button class="ver-mas-btn text-sm text-emerald-600 hover:underline ml-auto cursor-pointer" data-id="{{ $evento->id }}">Ver más</button>
+            </div>
+          </div>
+
+          <!-- Modal evento diario -->
+          <div id="modal-{{ $evento->id }}" class="fixed inset-0 hidden justify-center items-center z-50">
+            <div class="absolute inset-0  backdrop-blur-sm" data-modal-close></div>
+            <div class="relative bg-white rounded-lg max-w-xl w-full p-6 shadow-xl overflow-y-auto max-h-[90vh]">
+              <h2 class="text-2xl font-bold text-[#328E6E] mb-4">{{ $evento->titulo }}</h2>
+              <p class="text-sm text-gray-600 mb-1"><strong>Fecha:</strong> {{ $evento->fecha }}</p>
+              <p class="text-sm text-gray-600 mb-1"><strong>Horario:</strong> {{ Carbon::parse($evento->hora)->format('H:i') }} @if($evento->hora_termino) - {{ Carbon::parse($evento->hora_termino)->format('H:i') }} @endif</p>
+              <p class="text-sm text-gray-600 mb-4"><strong>Lugar:</strong> {{ $evento->lugar }}</p>
+              <div class="prose prose-sm max-w-none text-gray-700">{!! $evento->descripcion_html ?? $evento->descripcion !!}</div>
+              <button class="cerrar-modal-btn absolute top-2 right-4 text-gray-500 hover:text-gray-700 text-xl" data-modal-close>&times;</button>
+            </div>
+          </div>
+        @empty
+          <p class="text-gray-500 italic">No hay eventos diarios que coincidan con los filtros seleccionados.</p>
+        @endforelse
+      </div>
+    </section>
+
+    <!-- Eventos Semanales -->
+    <section>
+      <h2 class="text-2xl font-semibold text-gray-800 mb-4">Eventos Semanales</h2>
+      <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @forelse($eventosSemanalesFiltrados as $evento)
+          @php
+            $color = $evento->categoria->color ?? '#CBD5E0';
+            $nombreCategoria = $evento->categoria->nombre ?? 'Sin categoría';
+            $inicioSemana = Carbon::parse($evento->fecha)->startOfWeek();
+            $finSemana = Carbon::parse($evento->fecha)->endOfWeek();
+          @endphp
+          <div class="bg-white border-l-8 rounded-xl shadow-md hover:shadow-lg p-6 border border-gray-100 transition relative" style="border-color: {{ $color }}">
+            <h3 class="text-lg font-semibold text-[#328E6E]">{{ $evento->titulo }}</h3>
+            <p class="text-xs font-semibold text-gray-500 mt-1">Categoría: {{ $nombreCategoria }}</p>
+            <p class="text-sm text-gray-700 mt-1"><strong>Semana:</strong> {{ $inicioSemana->format('Y-m-d') }} al {{ $finSemana->format('Y-m-d') }}</p>
+            <p class="text-sm text-gray-700"><strong>Lugar:</strong> {{ $evento->lugar }}</p>
+            <div class="mt-4 flex gap-2">
+              <a href="{{ route('eventos.edit', $evento->id) }}" class="text-sm bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded-lg">Editar</a>
+              <a href="{{ route('eventos.semanal.dias', $evento->id) }}" class="text-sm bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-1 rounded-lg ">Ver días</a>
+              <form action="{{ route('eventos.destroy', $evento->id) }}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar este evento?')">
+                @csrf @method('DELETE')
+                <button type="submit" class="text-sm bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded-lg cursor-pointer">Eliminar</button>
+              </form>
+              <button class="ver-mas-btn text-sm text-emerald-600 hover:underline ml-auto cursor-pointer" data-id="{{ $evento->id }}">Ver más</button>
+            </div>
+          </div>
+
+          <!-- Modal evento semanal -->
+          <div id="modal-{{ $evento->id }}" class="fixed inset-0 hidden justify-center items-center z-50">
+            <div class="absolute inset-0 bg-black bg-opacity-50" data-modal-close></div>
+            <div class="relative bg-white rounded-lg max-w-xl w-full p-6 shadow-xl overflow-y-auto max-h-[90vh]">
+              <h2 class="text-2xl font-bold text-[#328E6E] mb-4">{{ $evento->titulo }}</h2>
+              <p class="text-sm text-gray-600 mb-1"><strong>Semana:</strong> {{ $inicioSemana->format('Y-m-d') }} al {{ $finSemana->format('Y-m-d') }}</p>
+              <p class="text-sm text-gray-600 mb-4"><strong>Lugar:</strong> {{ $evento->lugar }}</p>
+              <div class="prose prose-sm max-w-none text-gray-700">{!! $evento->descripcion_html ?? $evento->descripcion !!}</div>
+              <button class="cerrar-modal-btn absolute top-2 right-4 text-gray-500 hover:text-gray-700 text-xl" data-modal-close>&times;</button>
+            </div>
+          </div>
+        @empty
+          <p class="text-gray-500 italic">No hay eventos semanales que coincidan con los filtros seleccionados.</p>
+        @endforelse
+      </div>
+    </section>
+  </main>
 
   <!-- Footer -->
   <footer class="bg-gray-900 text-gray-300 py-10 mt-16">
     <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-
       <!-- Redes sociales -->
       <div class="flex items-center space-x-4">
         <a href="https://www.facebook.com/UDAinstitucional" target="_blank" class="hover:text-white transition">
-          <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
-            <path d="M22 12a10 10 0 10-11.5 9.95v-7.05H8v-3h2.5V9.5a3.5 3.5 0 013.5-3.5h2v3h-2a.5.5 0 00-.5.5V12H17l-.5 3h-2v7.05A10 10 0 0022 12z"/>
-          </svg>
+          <i class="fa-brands fa-square-facebook text-2xl"></i>
         </a>
         <a href="https://x.com/UAtacama" target="_blank" class="hover:text-white transition">
-          <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
-            <path d="M22.46 6c-.77.35-1.5.58-2.33.69a4.1 4.1 0 001.8-2.27 8.3 8.3 0 01-2.6.99 4.14 4.14 0 00-7.06 3.77 11.74 11.74 0 01-8.53-4.32 4.13 4.13 0 001.28 5.53 4.1 4.1 0 01-1.87-.52v.05a4.14 4.14 0 003.32 4.05 4.1 4.1 0 01-1.86.07 4.14 4.14 0 003.87 2.87A8.3 8.3 0 012 19.54a11.73 11.73 0 006.29 1.84c7.55 0 11.68-6.25 11.68-11.66 0-.18 0-.35-.01-.53A8.36 8.36 0 0024 5.32a8.2 8.2 0 01-2.36.65 4.1 4.1 0 001.8-2.27"/>
-          </svg>
+          <i class="fa-brands fa-twitter text-2xl"></i>
         </a>
         <a href="https://www.instagram.com/u_atacama/" target="_blank" class="hover:text-white transition">
-          <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
-            <path d="M12 2.2c3.2 0 3.584.012 4.85.07 1.17.054 1.97.24 2.43.403a4.92 4.92 0 011.75 1.075 4.92 4.92 0 011.075 1.75c.163.46.35 1.26.403 2.43.058 1.266.07 1.65.07 4.85s-.012 3.584-.07 4.85c-.054 1.17-.24 1.97-.403 2.43a4.92 4.92 0 01-1.075 1.75 4.92 4.92 0 01-1.75 1.075c-.46.163-1.26.35-2.43.403-1.266.058-1.65.07-4.85.07s-3.584-.012-4.85-.07c-1.17-.054-1.97-.24-2.43-.403a4.92 4.92 0 01-1.75-1.075 4.92 4.92 0 01-1.075-1.75c-.163-.46-.35-1.26-.403-2.43C2.212 15.584 2.2 15.2 2.2 12s.012-3.584.07-4.85c.054-1.17.24-1.97.403-2.43a4.92 4.92 0 011.075-1.75 4.92 4.92 0 011.75-1.075c.46-.163 1.26-.35 2.43-.403C8.416 2.212 8.8 2.2 12 2.2zm0 1.8c-3.163 0-3.537.012-4.787.07-1.048.05-1.617.22-1.993.37a3.12 3.12 0 00-1.133.738 3.12 3.12 0 00-.738 1.133c-.15.376-.32.945-.37 1.993-.058 1.25-.07 1.624-.07 4.787s.012 3.537.07 4.787c.05 1.048.22 1.617.37 1.993.17.447.403.835.738 1.133.298.335.686.568 1.133.738.376.15.945.32 1.993.37 1.25.058 1.624.07 4.787.07s3.537-.012 4.787-.07c1.048-.05 1.617-.22 1.993-.37a3.12 3.12 0 001.133-.738 3.12 3.12 0 00.738-1.133c.15-.376.32-.945.37-1.993.058-1.25.07-1.624.07-4.787s-.012-3.537-.07-4.787c-.05-1.048-.22-1.617-.37-1.993a3.12 3.12 0 00-.738-1.133 3.12 3.12 0 00-1.133-.738c-.376-.15-.945-.32-1.993-.37-1.25-.058-1.624-.07-4.787-.07zM12 5.8a6.2 6.2 0 100 12.4 6.2 6.2 0 000-12.4zm0 1.8a4.4 4.4 0 110 8.8 4.4 4.4 0 010-8.8zm6.4-.85a1.45 1.45 0 11-2.9 0 1.45 1.45 0 012.9 0z"/>
-          </svg>
+          <i class="fa-brands fa-instagram text-2xl"></i>
+        </a>
+        <a href="https://www.linkedin.com/company/uda-universidad-de-atacama/" target="_blank" class="hover:text-white transition">
+          <i class="fa-brands fa-linkedin text-2xl"></i>
+        </a>
+        <a href="https://www.youtube.com/c/UDATelevisi%C3%B3n" target="_blank" class="hover:text-white transition">
+          <i class="fa-brands fa-youtube text-2xl"></i>
         </a>
       </div>
-
       <!-- Crédito -->
       <div class="text-sm text-gray-400 text-center md:text-right">
         &copy; {{ date('Y') }} Universidad de Atacama.
       </div>
-
     </div>
   </footer>
 
-
   <!-- Scripts -->
+  <script src="https://kit.fontawesome.com/782e1f1389.js" crossorigin="anonymous"></script>
   <script src="{{ asset('js/verMas.js') }}"></script>
 
 </body>

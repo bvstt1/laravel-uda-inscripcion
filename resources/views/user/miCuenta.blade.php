@@ -42,34 +42,25 @@
 
     <!-- Sección: Datos Personales -->
     <section class="space-y-6">
-      <h2 class="text-xl font-semibold text-gray-700 border-b pb-2 mb-4">Modificar Datos Personales</h2>
+      <h2 class="text-xl font-semibold text-gray-700 border-b pb-2 mb-4">Ver Datos Personales</h2>
       <form action="{{ route('cuenta.actualizar') }}" method="POST" class="space-y-4">
         @csrf
 
         <!-- RUT (solo lectura) -->
         <div>
           <label for="rut" class="block text-sm font-semibold text-gray-700">RUT</label>
-          <input type="text" id="rut" name="rut" value="{{ $usuario->rut }}" readonly
-                 class="w-full border border-gray-300 rounded-xl px-4 py-2 bg-gray-100 text-gray-500 cursor-not-allowed">
+          <input type="text" id="rut" name="rut" value="{{ number_format(substr($usuario->rut, 0, -1), 0, '', '.') . '-' . substr($usuario->rut, -1) }}" readonly
+                class="w-full border border-gray-300 rounded-xl px-4 py-2 bg-gray-100 text-gray-500 cursor-not-allowed">
+        </div>
+
+        <!-- Correo (solo lectura) -->
+        <div class="mt-4">
+          <label for="correo" class="block text-sm font-semibold text-gray-700">Correo</label>
+          <input type="email" id="correo" name="correo" value="{{ $usuario->correo ?? $usuario->email }}" readonly
+                class="w-full border border-gray-300 rounded-xl px-4 py-2 bg-gray-100 text-gray-500 cursor-not-allowed">
         </div>
 
         <!-- Nombre -->
-        <div>
-          <label for="nombre" class="block text-sm font-semibold text-gray-700">Nombre</label>
-          <input type="text" id="nombre" name="nombre" value="{{ $usuario->nombre }}" required
-                 oninput="validarNombreApellido(this)"
-                 class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-[#328E6E] focus:outline-none">
-          <p id="mensaje-nombre" class="text-sm text-red-600 hidden mt-1"></p>
-        </div>
-
-        <!-- Apellido -->
-        <div>
-          <label for="apellido" class="block text-sm font-semibold text-gray-700">Apellido</label>
-          <input type="text" id="apellido" name="apellido" value="{{ $usuario->apellido }}" required
-                 oninput="validarNombreApellido(this)"
-                 class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-[#328E6E] focus:outline-none">
-          <p id="mensaje-apellido" class="text-sm text-red-600 hidden mt-1"></p>
-        </div>
 
         <!-- Solo si NO es estudiante -->
         @php $esEstudiante = session('usuario.tipo') === 'estudiante'; @endphp
@@ -95,10 +86,13 @@
           </div>
         @endif
 
-        <button type="submit"
-        class="w-full bg-[#328E6E] text-white py-2 rounded-lg hover:bg-[#287256] transition shadow-lg transform hover:scale-[1.02]">
-          Guardar cambios
-        </button>
+        <!-- Solo mostrar botón Guardar cambios si NO es estudiante -->
+        @if (!$esEstudiante)
+          <button type="submit"
+              class="w-full bg-[#328E6E] text-white py-2 rounded-lg hover:bg-[#287256] transition shadow-lg transform hover:scale-[1.02]">
+            Guardar cambios
+          </button>
+        @endif
       </form>
     </section>
 

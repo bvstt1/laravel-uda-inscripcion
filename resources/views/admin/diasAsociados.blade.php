@@ -57,9 +57,9 @@
               <form action="{{ route('eventos.destroy', $evento->id) }}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar este evento?')">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="text-sm bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded-lg">Eliminar</button>
+                <button type="submit" class="text-sm bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded-lg cursor-pointer">Eliminar</button>
               </form>
-              <button class="ver-mas-btn text-sm text-emerald-600 hover:underline ml-auto" data-id="{{ $evento->id }}">Ver más</button>
+              <button class="ver-mas-btn text-sm text-emerald-600 hover:underline ml-auto cursor-pointer" data-id="{{ $evento->id }}">Ver más</button>
             </div>
           </div>
 

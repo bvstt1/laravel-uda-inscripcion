@@ -71,9 +71,9 @@
     <div class="mt-4 text-center">
       <a href="{{ route('userSelection') }}" class="text-sm text-gray-600 hover:underline">Crear una nueva cuenta</a>
     </div>
-    <div class="mt-6 flex justify-center">
+    <a href="{{ route('welcome') }}" class="mt-6 flex justify-center">
       <img src="{{ asset('img/logo-uda.png') }}" alt="Logo Universidad de Atacama" class="h-12">
-    </div>
+    </a>
   </div>
   
   <script src="{{ asset('js/validacionLoginRegistro.js') }}"></script>

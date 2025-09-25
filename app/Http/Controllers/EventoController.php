@@ -213,28 +213,41 @@ class EventoController extends Controller
     public function mostrarEventosUsuarios(Request $request)
     {
         $categoriaId = $request->input('categoria_id');
+        $estado = $request->input('estado'); // activo/terminado
+        $buscar = $request->input('buscar');
+
         $ahora = Carbon::now();
 
-        // Eventos diarios: futuros o que aún no terminaron
+        // Eventos diarios
         $eventosDiarios = Evento::where('tipo', 'diario')
             ->whereNull('id_evento_padre')
-            ->when($categoriaId, fn($query) => $query->where('categoria_id', $categoriaId))
-            ->where(function($query) use ($ahora) {
-                $query->whereDate('fecha', '>', $ahora->toDateString())
-                    ->orWhere(function($q) use ($ahora) {
-                        $q->whereDate('fecha', $ahora->toDateString())
-                            ->whereTime('hora_termino', '>=', $ahora->toTimeString());
-                    });
-            })
-            ->orderBy('fecha', 'asc')
-            ->orderBy('hora', 'asc')
+            ->when($categoriaId, fn($q) => $q->where('categoria_id', $categoriaId))
+            ->when($buscar, fn($q) => $q->where('titulo', 'like', "%$buscar%"))
+            ->when($estado === 'activos', fn($q) => $q->where(function($q2) use ($ahora) {
+                $q2->whereDate('fecha', '>', $ahora->toDateString())
+                ->orWhere(function($q3) use ($ahora) {
+                    $q3->whereDate('fecha', $ahora->toDateString())
+                        ->whereTime('hora_termino', '>=', $ahora->toTimeString());
+                });
+            }))
+            ->when($estado === 'terminados', fn($q) => $q->where(function($q2) use ($ahora) {
+                $q2->whereDate('fecha', '<', $ahora->toDateString())
+                ->orWhere(function($q3) use ($ahora) {
+                    $q3->whereDate('fecha', $ahora->toDateString())
+                        ->whereTime('hora_termino', '<', $ahora->toTimeString());
+                });
+            }))
+            ->orderBy('fecha')
+            ->orderBy('hora')
             ->get();
 
-        // Eventos semanales: que aún no terminaron
+        // Eventos semanales
         $eventosSemanales = Evento::where('tipo', 'semanal')
-            ->when($categoriaId, fn($query) => $query->where('categoria_id', $categoriaId))
-            ->whereDate('fecha', '>=', $ahora->toDateString()) // inicio >= hoy
-            ->orderBy('fecha', 'asc')
+            ->when($categoriaId, fn($q) => $q->where('categoria_id', $categoriaId))
+            ->when($buscar, fn($q) => $q->where('titulo', 'like', "%$buscar%"))
+            ->when($estado === 'activos', fn($q) => $q->whereDate('fecha', '>=', $ahora->toDateString()))
+            ->when($estado === 'terminados', fn($q) => $q->whereDate('fecha', '<', $ahora->toDateString()))
+            ->orderBy('fecha')
             ->get();
 
         $categorias = Categoria::all();
@@ -246,9 +259,12 @@ class EventoController extends Controller
             'eventosDiarios',
             'eventosSemanales',
             'categorias',
-            'inscripciones'
+            'inscripciones',
+            'buscar',
+            'estado'
         ));
     }
+
 
     
     public function verDiasUsuario($id)
