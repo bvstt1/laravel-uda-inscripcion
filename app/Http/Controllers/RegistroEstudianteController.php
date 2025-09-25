@@ -27,6 +27,8 @@ class RegistroEstudianteController extends Controller
                     }
                 },
             ],
+            'nombre' => 'required|string|max:255',
+            'apellido' => 'required|string|max:255',
             'correo' => [
                 'required',
                 'email',
@@ -53,6 +55,8 @@ class RegistroEstudianteController extends Controller
 
         $estudiante = Estudiante::create([
             'rut' => $rut_normalizado,
+            'nombre' => $request->nombre,
+            'apellido' => $request->apellido,
             'correo' => $request->correo,
             'carrera' => $request->carrera,
             'contrasena' => Hash::make($request->contrasena)

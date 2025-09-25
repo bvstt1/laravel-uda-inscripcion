@@ -27,6 +27,8 @@ class RegistroExternoController extends Controller
                     }
                 },
             ],
+            'nombre' => 'required|string|max:255',
+            'apellido' => 'required|string|max:255',
             'correo' => [
                 'required',
                 'email',
@@ -53,6 +55,8 @@ class RegistroExternoController extends Controller
 
         $externo = Externo::create([
             'rut' => $rut_normalizado,
+            'nombre' => $request->nombre,
+            'apellido' => $request->apellido,
             'correo' => $request->correo,
             'institucion' => $request->institucion,
             'cargo' => $request->cargo,
@@ -62,6 +66,6 @@ class RegistroExternoController extends Controller
         Session::put('rut', $externo->rut);
         Session::put('tipo_usuario', 'externo');
 
-        return redirect()->route('inscripcionEventos')->with('success', 'Usuario registrado exitosamente');
+        return redirect()->route('inscripcionEventos')->with('success', 'Registro completado con éxito.');
     }
 }

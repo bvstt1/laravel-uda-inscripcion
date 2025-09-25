@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('externos', function (Blueprint $table) {
             $table->id();
+            $table->string('nombre');
+            $table->string('apellido');
             $table->string('rut')->unique();
             $table->string('correo')->unique();
             $table->string('institucion');

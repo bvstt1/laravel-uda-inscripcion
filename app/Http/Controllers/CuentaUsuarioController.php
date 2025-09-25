@@ -36,31 +36,52 @@ class CuentaUsuarioController extends Controller
 
     public function actualizar(Request $request)
     {
-        $usuario = session('usuario');
-        $tipo = $usuario['tipo'];
-        $rut = $usuario['rut'];
-        $tabla = $tipo === 'estudiante' ? 'estudiantes' : 'externos';
+        $usuarioSession = session('usuario');
+        $tipo = $usuarioSession['tipo'];
+        $rut = $usuarioSession['rut'];
 
-        $request->validate([
-            'correo' => $tipo === 'externo' ? 'required|email' : '',
-            'cargo' => $tipo === 'externo' ? 'nullable|string|max:100' : '',
-            'institucion' => $tipo === 'externo' ? 'nullable|string|max:100' : '',
-            'contrasena' => 'nullable|min:8|confirmed',
-        ]);
+        // Obtener modelo correspondiente
+        $usuario = $tipo === 'estudiante' 
+            ? Estudiante::where('rut', $rut)->first() 
+            : Externo::where('rut', $rut)->first();
 
-        $datosActualizados = [];
+        if (!$usuario) {
+            return redirect()->route('login')->with('error', 'Usuario no encontrado.');
+        }
 
+        // Validación
+        $rules = [
+            'nombre' => 'required|string|max:255',
+            'apellido' => 'required|string|max:255',
+            'contrasena' => 'nullable|min:8|confirmed|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/',
+        ];
+
+        // Campos adicionales solo para externos
         if ($tipo === 'externo') {
-            $datosActualizados['correo'] = $request->correo;
-            $datosActualizados['cargo'] = $request->cargo;
-            $datosActualizados['institucion'] = $request->institucion;
+            $rules['correo'] = 'required|email|max:255|unique:externos,correo,' . $usuario->id;
+            $rules['cargo'] = 'nullable|string|max:100';
+            $rules['institucion'] = 'nullable|string|max:100';
         }
 
+        $request->validate($rules);
+
+        // Actualizar campos comunes
+        $usuario->nombre = $request->nombre;
+        $usuario->apellido = $request->apellido;
+
+        // Actualizar contraseña si existe
         if ($request->filled('contrasena')) {
-            $datosActualizados['contrasena'] = Hash::make($request->contrasena);
+            $usuario->contrasena = Hash::make($request->contrasena);
         }
 
-        DB::table($tabla)->where('rut', $rut)->update($datosActualizados);
+        // Actualizar campos adicionales solo para externos
+        if ($tipo === 'externo') {
+            $usuario->correo = $request->correo;
+            $usuario->cargo = $request->cargo;
+            $usuario->institucion = $request->institucion;
+        }
+
+        $usuario->save();
 
         return redirect()->route('cuenta.formulario')->with('success', 'Datos actualizados correctamente.');
     }

@@ -13,7 +13,7 @@
     'resources/js/app.js',
     ])
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+<body class="bg-gray-50 min-h-screen flex items-center justify-center">
     <div class="bg-white p-8 rounded-2xl shadow-md w-full max-w-lg lg:max-w-3xl">
         
         <div class="flex justify-end space-x-3 mb-6">
@@ -168,6 +168,6 @@
     <script>
         window.categoriaStoreUrl = "{{ route('admin.categorias.store') }}";
     </script>
-    <script src="{{ secure_asset('js//crearEditarEvento.js') }}"></script>
+    <script src="{{ asset('js//crearEditarEvento.js') }}"></script>
 </body>
 </html>

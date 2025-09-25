@@ -5,12 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Asistencia Libre</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite('resources/css/app.css')
+    @vite('resources/js/app.js')
 </head>
 <body class="bg-gray-100 h-screen flex items-center justify-center">
     <div class="bg-white shadow-xl rounded-lg p-8 w-full max-w-md text-center">
         <h1 class="text-2xl font-bold text-[#328E6E] mb-6">Totem de Asistencia</h1>
-        <p class="text-sm text-gray-600 mb-6">Ingresa tu RUT para registrar tu asistencia del día de hoy a las instalaciones.</p>
+        <p class="text-sm text-gray-600 mb-6">Ingresa tu RUT (sin puntos ni guión) para registrar tu asistencia del día de hoy a las instalaciones.</p>
 
         @if(session('success'))
             <div id="success-message" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">

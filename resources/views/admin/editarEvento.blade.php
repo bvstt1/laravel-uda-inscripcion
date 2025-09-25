@@ -13,7 +13,7 @@
         'resources/js/app.js',
     ])
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+<body class="bg-gray-50 min-h-screen flex items-center justify-center">
     <div class="bg-white p-8 rounded-2xl shadow-md w-full max-w-lg lg:max-w-3xl">
 
         <div class="flex justify-end space-x-3 mb-6">
@@ -129,35 +129,35 @@
         </div>
     </div>
 
-<!-- Modal Nueva Categoría -->
-<div id="modalCategoria" class="fixed inset-0 bg-[rgba(0,0,0,0.3)] flex items-center justify-center hidden z-50">
-    <div class="bg-white p-6 rounded-xl shadow-xl w-full max-w-sm">
-        <h3 class="text-xl font-bold mb-4">Crear nueva categoría</h3>
-        <form id="formCategoria">
-            <div class="mb-3">
-                <label class="block font-medium text-gray-700">Nombre</label>
-                <input type="text" name="nombre" required class="w-full p-2 border border-gray-300 rounded-lg">
-            </div>
-            <div class="mb-4">
-                <label class="block font-medium text-gray-700">Color (hex)</label>
-                <input type="color" name="color" class="w-16 h-10 p-0 border border-gray-300 rounded-lg">
-            </div>
-            <div class="flex justify-between">
-                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                    Guardar
-                </button>
-                <button type="button" id="btnCancelarCategoria" class="text-gray-600 hover:underline">Cancelar</button>
-            </div>
-        </form>
+    <!-- Modal Nueva Categoría -->
+    <div id="modalCategoria" class="fixed inset-0 bg-[rgba(0,0,0,0.3)] flex items-center justify-center hidden z-50">
+        <div class="bg-white p-6 rounded-xl shadow-xl w-full max-w-sm">
+            <h3 class="text-xl font-bold mb-4">Crear nueva categoría</h3>
+            <form id="formCategoria">
+                <div class="mb-3">
+                    <label class="block font-medium text-gray-700">Nombre</label>
+                    <input type="text" name="nombre" required class="w-full p-2 border border-gray-300 rounded-lg">
+                </div>
+                <div class="mb-4">
+                    <label class="block font-medium text-gray-700">Color (hex)</label>
+                    <input type="color" name="color" class="w-16 h-10 p-0 border border-gray-300 rounded-lg">
+                </div>
+                <div class="flex justify-between">
+                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                        Guardar
+                    </button>
+                    <button type="button" id="btnCancelarCategoria" class="text-gray-600 hover:underline">Cancelar</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
     <script>
         window.categoriaStoreUrl = "{{ route('admin.categorias.store') }}";
     </script>
-    <script src="{{ secure_asset('js/crearEditarEvento.js') }}"></script>
+    <script src="{{ asset('js/crearEditarEvento.js') }}"></script>
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {

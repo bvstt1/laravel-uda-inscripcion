@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Registro de asistencia bloqueado</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite('resources/css/app.css')
+    @vite('resources/js/app.js')
 </head>
 <body class="bg-red-100 min-h-screen flex items-center justify-center px-4">
     <div class="bg-white shadow-lg rounded-xl p-8 max-w-md text-center">

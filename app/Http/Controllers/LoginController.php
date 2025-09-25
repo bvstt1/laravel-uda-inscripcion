@@ -53,7 +53,7 @@ class LoginController extends Controller
     public function logout()
     {
         Session::flush();
-        return redirect('/login');
+        return redirect('/');
     }
     
 }

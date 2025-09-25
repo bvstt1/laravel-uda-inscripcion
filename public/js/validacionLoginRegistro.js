@@ -138,3 +138,61 @@ document.addEventListener('DOMContentLoaded', function () {
   if (confirmar) confirmar.addEventListener('input', validarConfirmacionContrasena);
 });
 // ==========================================================
+// VALIDAR NOMBRE Y APELLIDO (solo letras y espacios simples)
+// ==========================================================
+function validarNombreApellido(input) {
+  let valor = input.value;
+
+  // Permitir letras (mayúsculas/minúsculas), espacios, guiones y acento suelto
+  valor = valor.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ ´-]/g, '');
+
+  // Evitar espacios dobles
+  valor = valor.replace(/\s{2,}/g, ' ');
+
+  // Evitar acentos dobles consecutivos
+  valor = valor.replace(/´{2,}/g, '´');
+
+  // Quitar espacios al inicio y al final
+  valor = valor.trim();
+
+  input.value = valor;
+
+  // Mensaje de validación
+  const mensaje = document.getElementById(`mensaje-${input.name}`);
+  if (mensaje) {
+    if (valor.length < 2) {
+      mensaje.textContent = 'Debe tener al menos 2 caracteres válidos.';
+      mensaje.classList.remove('hidden');
+    } else {
+      mensaje.textContent = '';
+      mensaje.classList.add('hidden');
+    }
+  }
+}
+// ==========================================================
+document.addEventListener('DOMContentLoaded', () => {
+  const contrasenaInput = document.getElementById('contrasena');
+  const toggleBtn = document.getElementById('toggleContrasena');
+  const iconoOjo = document.getElementById('iconoOjo');
+
+  toggleBtn.addEventListener('click', () => {
+    if (contrasenaInput.type === 'password') {
+      contrasenaInput.type = 'text';
+      // Cambiar SVG a ojo cerrado
+      iconoOjo.innerHTML = `
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+            d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.269-2.943-9.543-7a10.05 10.05 0 012.745-4.223M9.88 9.88a3 3 0 104.24 4.24"/>
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+            d="M3 3l18 18"/>
+    `;
+    } else {
+      contrasenaInput.type = 'password';
+      // Ojo abierto
+      iconoOjo.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>`;
+    }
+  });
+});
+

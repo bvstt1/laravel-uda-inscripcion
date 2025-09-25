@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registro Estudiante UDA</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  @vite('resources/css/app.css')
+  @vite('resources/js/app.js')
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
   <div class="bg-white rounded-2xl shadow-lg p-8 w-full max-w-sm">
@@ -15,7 +16,7 @@
       <div class="text-center">
         <span id="mensaje-rut" class="text-gray-400 text-sm">Escribe tu rut sin puntos ni guión</span>  
       </div>
-      <form action="/registroEstudiante" method="POST" onsubmit="return validarFormulario();" class="space-y-4">
+      <form action="{{ route('registroEstudiante') }}" method="POST" onsubmit="return validarFormulario();" class="space-y-4">
         @csrf 
       
       <input type="text" id="rut" name="rut" maxlength="10" placeholder="RUT" required
@@ -25,9 +26,27 @@
         <p class="text-red-500 text-sm mt-1 transition-opacity duration-300" id="alerta-rut">{{ $message }}</p>
       @enderror
 
+      <!-- NOMBRE -->
+      <input type="text" name="nombre" id="nombre" placeholder="Nombre" required
+        oninput="validarNombreApellido(this, 'mensaje-nombre')"
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#328E6E]">
+      <span id="mensaje-nombre" class="text-red-500 text-sm hidden"></span>
+      @error('nombre')
+        <p class="text-red-500 text-sm mt-1 transition-opacity duration-300">{{ $message }}</p>
+      @enderror
+
+      <!-- APELLIDO -->
+      <input type="text" name="apellido" id="apellido" placeholder="Apellido" required
+        oninput="validarNombreApellido(this, 'mensaje-apellido')"
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#328E6E]">
+      <span id="mensaje-apellido" class="text-red-500 text-sm hidden"></span>
+      @error('apellido')
+        <p class="text-red-500 text-sm transition-opacity duration-300">{{ $message }}</p>
+      @enderror
+
       <input type="email" name="correo" id="correo" placeholder="correo@alumnos.uda.cl" required
         oninput="validarCorreo(this)"
-        class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#328E6E]">
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#328E6E]">
 
       <span id="mensaje-correo" class="text-red-500 text-sm hidden"></span>
 
@@ -91,20 +110,20 @@
       </select>
 
       <button type="submit" name="registro-est"
-        class="w-full text-white py-2 rounded-lg bg-[#328E6E] transition hover:bg-[#287256] shadow-lg">
+        class="w-full text-white py-2 rounded-lg bg-[#328E6E] transition hover:bg-[#287256] shadow-lg transform hover:scale-[1.02]">
         Registrar
       </button>
     </form>
 
     <div class="mt-4 text-center">
-      <a href="./login" class="text-sm text-gray-600 hover:underline">Ya tienes cuenta? Inicia Sesión aquí</a>
+      <a href="{{ route('login') }}" class="text-sm text-gray-600 hover:underline">Ya tienes cuenta? Inicia Sesión aquí</a>
     </div>
 
     <div class="mt-6 flex justify-center">
-      <img src="../img/logo-uda.png" alt="Logo Universidad de Atacama" class="h-12">
+      <img src="{{ asset('img/logo-uda.png') }}" alt="Logo Universidad de Atacama" class="h-12">
     </div>
   </div>
 
-<script src="{{ secure_asset('js/validacionLoginRegistro.js') }}"></script>
+<script src="{{ asset('js/validacionLoginRegistro.js') }}"></script>
 </body>
 </html>
