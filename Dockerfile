@@ -1,17 +1,16 @@
-# Base con PHP + Swoole listo
 FROM elrincondeisma/octane:latest
 
-# Instalar dependencias del sistema necesarias para Composer y extensiones PHP
-RUN apt-get update && apt-get install -y \
+# Instalar dependencias necesarias y extensiones PHP
+RUN apk add --no-cache \
     git \
     unzip \
     libzip-dev \
     libpng-dev \
-    libonig-dev \
+    oniguruma-dev \
     libxml2-dev \
-    libcurl4-openssl-dev \
-    && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd curl zip \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    curl-dev \
+    bash \
+    && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd curl zip
 
 # Copiar Composer desde imagen oficial
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -19,10 +18,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Copiar RoadRunner desde imagen oficial
 COPY --from=spiralscout/roadrunner:2.4.2 /usr/bin/rr /usr/bin/rr
 
-# Definir directorio de trabajo
 WORKDIR /app
-
-# Copiar archivos del proyecto
 COPY . .
 
 # Instalar dependencias de Composer
@@ -43,6 +39,5 @@ RUN php artisan config:clear
 # Instalar Octane con Swoole
 RUN php artisan octane:install --server="swoole"
 
-# Exponer puerto y definir comando
 EXPOSE 8000
 CMD ["php", "artisan", "octane", "--server=swoole", "--host=0.0.0.0"]
