@@ -27,14 +27,6 @@ RUN apk add --no-cache \
 # Instalar Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Instalar RoadRunner correctamente
-RUN curl -Ls https://github.com/spiral/roadrunner/releases/download/v2.11.1/roadrunner-2.11.1-linux-amd64.tar.gz \
-    -o /tmp/roadrunner.tar.gz \
-    && tar -xzf /tmp/roadrunner.tar.gz -C /tmp \
-    && mv /tmp/rr /usr/local/bin/rr \
-    && chmod +x /usr/local/bin/rr \
-    && rm /tmp/roadrunner.tar.gz
-
 # Configurar directorio de trabajo
 WORKDIR /app
 COPY . .
@@ -42,8 +34,8 @@ COPY . .
 # Instalar dependencias de Composer
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-# Instalar Octane y RoadRunner si no están en composer.json
-RUN composer require laravel/octane spiral/roadrunner
+# Instalar Octane si no está en composer.json
+RUN composer require laravel/octane
 
 # Configuración Laravel
 COPY .env.example .env
