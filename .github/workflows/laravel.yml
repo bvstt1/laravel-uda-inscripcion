@@ -34,3 +34,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/laravel:latest
+      - name: Clear Docker builder cache
+        run: docker builder prune -af
+      - name: Clear Composer cache
+        run: composer clear-cache
