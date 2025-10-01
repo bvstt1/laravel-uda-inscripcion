@@ -11,6 +11,10 @@ COPY . .
 # Muestra la versión de PHP en los logs de build
 RUN php -v
 
+# Install required PHP extensions
+RUN apt-get update && apt-get install -y libpng-dev libjpeg-dev libfreetype6-dev \
+    && docker-php-ext-install bcmath gd
+
 # Instala dependencias de Composer
 RUN composer install --no-interaction --optimize-autoloader
 
