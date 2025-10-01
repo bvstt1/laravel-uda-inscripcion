@@ -1,23 +1,29 @@
 FROM elrincondeisma/octane:latest
 
-RUN curl -sS https://getcomposer.org/installer | php -- \
-    --install-dir=/usr/local/bin --filename=composer
-
+# Instalar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-COPY --from=spiralscout/roadrunner:2.4.2 /usr/bin/rr /usr/bin/rr
 
+# Copiar proyecto
 WORKDIR /app
 COPY . .
-RUN rm -rf /app/vendor
-RUN rm -rf /app/composer.lock
-RUN composer install
+
+# Limpiar vendor y lock (opcional, si quieres forzar re-instalar)
+RUN rm -rf vendor composer.lock || true
+
+# Instalar dependencias
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader
+
+# Instalar Octane y RoadRunner
 RUN composer require laravel/octane spiral/roadrunner
+
+# Configuración inicial de Laravel
 COPY .env.example .env
-RUN mkdir -p /app/storage/logs
+RUN mkdir -p storage/logs
 RUN php artisan cache:clear
 RUN php artisan view:clear
 RUN php artisan config:clear
 RUN php artisan octane:install --server="swoole"
-CMD php artisan octane --server="swoole" --host="0.0.0.0"
 
+# Exponer puerto y comando
 EXPOSE 8000
+CMD ["php", "artisan", "octane", "--server=swoole", "--host=0.0.0.0"]
