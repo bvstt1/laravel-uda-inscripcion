@@ -1,38 +1,39 @@
 FROM php:8.2-fpm
 
-# Instala Composer desde la imagen oficial
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Instala dependencias del sistema
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    zip \
+    unzip \
+    git \
+    nodejs \
+    npm \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libzip-dev \
+    default-mysql-client
 
-WORKDIR /app
+# Instala extensiones PHP necesarias
+RUN docker-php-ext-install bcmath gd zip pdo_mysql
 
-# Copia el código fuente
+# Instala Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www
 COPY . .
 
-# Muestra la versión de PHP en los logs de build
-RUN php -v
+# Instala dependencias y compila
+RUN composer install --no-dev --optimize-autoloader \
+    && npm install \
+    && npm run build
 
-# Install required PHP extensions
-RUN apt-get update && apt-get install -y libpng-dev libjpeg-dev libfreetype6-dev \
-    && docker-php-ext-install bcmath gd
-
-# Instala dependencias de Composer
-RUN composer install --no-interaction --optimize-autoloader
-
-# Instala Octane y RoadRunner/Swoole
-RUN composer require laravel/octane spiral/roadrunner --no-interaction
-
-# Copia el ejemplo de entorno y prepara directorios
-COPY .env.example .env
-RUN mkdir -p /app/storage/logs
-
-# Limpia caches de Laravel
-RUN php artisan cache:clear
-RUN php artisan view:clear
-RUN php artisan config:clear
-
-# Instala Octane (por defecto uso Swoole, cambia --server si prefieres RoadRunner)
-RUN php artisan octane:install --server="swoole"
-
-# Comando de arranque
-CMD ["php", "artisan", "octane", "--server=swoole", "--host=0.0.0.0"]
 EXPOSE 8000
+
+# Comandos Laravel
+CMD php artisan config:cache \
+    && php artisan route:cache \
+    && php artisan view:cache \
+    && php artisan migrate --force \
+    && php artisan db:seed --force \
