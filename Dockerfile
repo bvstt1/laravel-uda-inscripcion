@@ -16,6 +16,8 @@ RUN apk add --no-cache \
     zlib-dev \
     libwebp-dev \
     icu-dev \
+    curl \
+    tar \
     && docker-php-ext-configure gd \
         --with-freetype \
         --with-jpeg \
@@ -25,9 +27,13 @@ RUN apk add --no-cache \
 # Instalar Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Instalar RoadRunner
+# Instalar RoadRunner correctamente
 RUN curl -Ls https://github.com/spiral/roadrunner/releases/download/v2.11.1/roadrunner-2.11.1-linux-amd64.tar.gz \
-    | tar -xz -C /usr/local/bin rr
+    -o /tmp/roadrunner.tar.gz \
+    && tar -xzf /tmp/roadrunner.tar.gz -C /tmp \
+    && mv /tmp/rr /usr/local/bin/rr \
+    && chmod +x /usr/local/bin/rr \
+    && rm /tmp/roadrunner.tar.gz
 
 # Configurar directorio de trabajo
 WORKDIR /app
