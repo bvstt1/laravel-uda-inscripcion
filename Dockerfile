@@ -1,3 +1,4 @@
+FROM php:8.2-fpm
 FROM elrincondeisma/octane:latest
 
 # Composer
