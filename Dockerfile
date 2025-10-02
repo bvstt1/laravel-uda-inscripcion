@@ -1,48 +1,37 @@
-name: Docker Image CI
+FROM php:8.2-fpm
 
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+# Instala dependencias del sistema
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    zip \
+    unzip \
+    git \
+    nodejs \
+    npm \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libzip-dev \
+    default-mysql-client
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+# Instala extensiones PHP necesarias
+RUN docker-php-ext-install bcmath gd zip pdo_mysql
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+# Instala Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@master
-        with:
-          platforms: all
+WORKDIR /var/www
+COPY . .
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+# Instala dependencias y compila
+RUN composer install --no-dev --optimize-autoloader \
+    && npm install \
+    && npm run build
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+EXPOSE 8000
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: ./Dockerfile
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/laravel:latest
-          no-cache: true
-
-      - name: Check PHP version in built image
-        run: docker run --rm ${{ secrets.DOCKER_HUB_USERNAME }}/laravel:latest php -v
-
-      - name: Clear Docker builder cache
-        run: docker builder prune -af
-
-      - name: Clear Composer cache
-        run: composer clear-cache
+# Comandos Laravel
+CMD php artisan config:cache \
+    && php artisan route:cache \
+    && php artisan view:cache \
