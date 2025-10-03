@@ -24,24 +24,24 @@ class ConfirmacionEventoMail extends Mailable
         $this->evento = $evento;
         $this->fechaHora = $fechaHora;
         $this->lugar = $lugar;
-
-        // Ruta del archivo QR
+    
+        // Nombre archivo QR en SVG
         $fileName = 'qr_' . $rut . '_' . $eventoId . '.svg';
-        $relativePath = 'public/qr/' . $fileName;
-
-        // Generar QR y guardarlo
+        $this->qrPath = storage_path('app/public/qr/' . $fileName);
+    
+        // Generar QR en SVG y guardarlo
         QrCode::format('svg')
             ->size(200)
-            ->generate($rut, storage_path('app/' . $relativePath));
-
-        // Ruta pública para mostrar en el correo
-        $this->qrPath = asset('storage/qr/' . $fileName);
-
+            ->generate($rut, $this->qrPath);
     }
-
+    
     public function build()
     {
         return $this->subject('Confirmación de inscripción al evento')
-                    ->view('emails.confirmacionEvento');
+            ->view('emails.confirmacionEvento')
+            ->with([
+                'qrPath' => $this->qrPath
+            ]);
     }
+    
 }

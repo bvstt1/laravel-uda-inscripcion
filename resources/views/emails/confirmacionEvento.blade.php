@@ -42,7 +42,7 @@
         <p style="margin-top: 25px;"><strong>🔐 Código QR de acceso:</strong></p>
 
         <div style="text-align: center; margin: 20px 0;">
-          <img src="{{ $qrPath }}" alt="Código QR" width="200" height="200" style="display: inline-block;" />
+          <img src="{{ $message->embed($qrPath) }}" alt="Código QR" width="200" height="200"/>
         </div>
 
         <p>📌 Recuerda presentar tu <strong>código QR o RUT</strong> al ingresar al evento para validar tu asistencia.</p>
