@@ -249,11 +249,13 @@ class EventoController extends Controller
         // Eventos semanales principales
         // ======================
         $eventosSemanales = Evento::where('tipo', 'semanal')
-            ->when($categoriaId, fn($q) => $q->where('categoria_id', $categoriaId))
-            ->when($buscar, fn($q) => $q->where('titulo', 'like', "%$buscar%"))
-            ->whereDate('fecha', '>=', $ahora->toDateString())
-            ->orderBy('fecha')
-            ->get();
+        ->when($categoriaId, fn($q) => $q->where('categoria_id', $categoriaId))
+        ->when($buscar, fn($q) => $q->where('titulo', 'like', "%$buscar%"))
+        ->get()
+        ->filter(function($evento) use ($ahora) {
+            $finSemana = Carbon::parse($evento->fecha)->copy()->addDays(6); // Semana de 7 días
+            return $finSemana->endOfDay()->gte($ahora);
+        });
 
         // ======================
         // Combinar diarios simples y hijos de semanales
