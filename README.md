@@ -1,61 +1,76 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 📅 Event System (Sistema de Eventos) - UDA Innovation HUB
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+> A centralized web platform for managing academic and extracurricular activities at the University of Atacama.
 
-## About Laravel
+## 📖 Overview
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+The **Event System** is a web platform developed to optimize the institutional management of events at the **University of Atacama**. It replaces manual processes with a digital, centralized solution for registration, user administration, and attendance control using **QR codes** and **RUT verification**.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+The project features a specialized **"Totem" module**, designed for on-site kiosks to track daily attendance efficiently.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## ✨ Key Features
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 👤 User Roles
+* **Administrator:** Full control over events, users, and reporting.
+* **Student/External:** Public interface for event enrollment and attendance tracking.
+* **System:** Automated background validations.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### 🚀 Core Functionalities
+* **Event Management:** Create, edit, and reschedule events with custom categories.
+* **Smart Registration:**
+    * **QR Code Scanner:** Real-time camera integration for attendance.
+    * **RUT Entry:** Manual backup for users without devices.
+    * **Totem Mode:** Full-screen interface for high-traffic entry points.
+* **Analytics:** Exportable Excel/PDF reports for daily and weekly attendance.
+* **Notifications:** Automated emails for enrollment confirmation.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## 🛠️ Tech Stack & Tools
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+* **Backend:** [Laravel](https://laravel.com/) (PHP)
+* **Frontend:** [Blade Templates](https://laravel.com/docs/blade) & [Tailwind CSS](https://tailwindcss.com/)
+* **Database:** MySQL
+* **Infrastructure:** Docker (Laravel Sail) & Railway (Staging)
+* **Version Control:** Git & GitHub
 
-### Premium Partners
+---
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## 📅 Development Journey
 
-## Contributing
+The project was developed over a **12-week period (April - June 2025)** using an **Agile/Scrum-inspired methodology**.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Phase 1: Foundation (Weeks 1-3)
+* **Setup:** Requirement gathering (HU1-HU19), Git workflow definition, and environment configuration (Docker/XAMPP).
+* **Architecture:** Database modeling (ERD) and frontend scaffolding using **Tailwind CSS**.
+* **Result:** A functional skeleton with defined routes and layouts.
 
-## Code of Conduct
+### Phase 2: Core Logic (Weeks 4-5)
+* **Authentication:** Implemented custom auth logic to separate *Administrators* from *Students/External* users.
+* **CRUD Operations:** Built the core event management system (Create, Read, Update, Delete).
+* **Enrollment:** Developed logic for event capacity handling and user registration.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Phase 3: Advanced Features & IoT (Weeks 6-9)
+* [cite_start]**QR Integration:** Researched and implemented browser-based QR scanning libraries for real-time attendance[cite: 51].
+* [cite_start]**Totem Interface:** Designed a "Kiosk Mode" optimized for large touchscreens, allowing rapid RUT entry and attendance tracking at the HUB entrance[cite: 55, 60].
+* **UX Improvements:** Added color-coded categories and mobile responsiveness.
 
-## Security Vulnerabilities
+### Phase 4: Testing & Deployment (Weeks 10-12)
+* [cite_start]**Automation:** Automated hiding of past events and password recovery systems[cite: 70].
+* **QA:** Conducted End-to-End (E2E) testing on QR flows and Excel exports.
+* [cite_start]**Deployment:** Finalized **Docker** configuration and performed load testing on **Railway** to simulate production environments[cite: 79].
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+## ⚙️ Installation & Deployment
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Prerequisites
+* [Docker Desktop](https://www.docker.com/products/docker-desktop)
+* [Git](https://git-scm.com/)
+
+### 1. Clone the Repository
+```bash
+git clone [https://github.com/bvstt1/laravel-uda-inscripcion.git](https://github.com/bvstt1/laravel-uda-inscripcion.git)
+cd laravel-uda-inscripcion
